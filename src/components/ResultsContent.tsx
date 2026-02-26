@@ -10,6 +10,7 @@ import {
 import type { SimParams, SimResult } from "../types";
 import { Card } from "./Card";
 import { StatCard } from "./StatCard";
+import { useMemo } from "react";
 
 interface ResultsContentProps {
   result: SimResult;
@@ -19,20 +20,88 @@ interface ResultsContentProps {
 export function ResultsContent({ result, params }: ResultsContentProps) {
   const plural = result.years === 1 ? "year" : "years";
 
-  let endReasonText = "";
-  let endReasonExplanation = "";
-  if (result.endReason === "everyone_reached") {
-    endReasonText = "🎉 Everyone Reached!";
-    endReasonExplanation =
+  const analysisCards = useMemo(() => {
+    const cards = [];
+
+    // Calculate the reason the simulation ended, defaulting to everyone reached
+    let endReasonText = "🎉 Everyone Reached!";
+    let endReasonExplanation =
       "Your influence rippled through the entire network. Every single person was reached!";
-  } else if (result.endReason === "network_saturation") {
-    endReasonText = "⛓️ Network Saturation";
-    endReasonExplanation = `All reachable connections have been influenced. The people you reached have no remaining un-influenced friends to spread to. This happens because communities are tightly connected internally (${(params.withinRatio * 100).toFixed(0)}% of relationships), with only about ${((1 - params.withinRatio) * 100).toFixed(0)}% of relationships acting as bridges between groups.`;
-  } else {
-    endReasonText = "⏰ Time Limit Reached";
-    endReasonExplanation =
-      'The simulation reached its maximum duration. The ripple is still spreading, but we stopped the simulation here. You can try increasing the "Max Simulation Years" in the advanced options to see how much further it could go!';
-  }
+    if (result.endReason === "network_saturation") {
+      endReasonText = "⛓️ Network Saturation";
+      endReasonExplanation = `All reachable connections have been influenced. The people you reached have no remaining un-influenced friends to spread to. This happens because communities are tightly connected internally (${(params.withinRatio * 100).toFixed(0)}% of relationships), with only about ${((1 - params.withinRatio) * 100).toFixed(0)}% of relationships acting as bridges between groups.`;
+    } else {
+      endReasonText = "⏰ Time Limit Reached";
+      endReasonExplanation =
+        'The simulation reached its maximum duration. The ripple is still spreading, but we stopped the simulation here. You can try increasing the "Max Simulation Years" in the advanced options to see how much further it could go!';
+    }
+    cards.push({
+      heading: endReasonText,
+      details: endReasonExplanation,
+    });
+
+    // Check if the growth is linear, which implies the withinRatio is limiting the spread.
+    // Linear growth means year-over-year increments are roughly constant.
+    // We measure this via the coefficient of variation (stddev / mean) of the diffs —
+    // a low CV means the increments are consistent, i.e. linear growth.
+    const growthDiffs = result.yearlyGrowth
+      .map(({ people }, i, arr) =>
+        // ignore the first few years and wait for stabilization
+        i === 0 || i < arr.length / 2
+          ? null
+          : people - result.yearlyGrowth[i - 1].people,
+      )
+      .filter((d): d is number => d !== null);
+
+    let linear = false;
+    if (growthDiffs.length >= 3) {
+      const mean = growthDiffs.reduce((a, b) => a + b, 0) / growthDiffs.length;
+      if (mean > 0) {
+        const variance =
+          growthDiffs.reduce((a, d) => a + (d - mean) ** 2, 0) /
+          growthDiffs.length;
+        const cv = Math.sqrt(variance) / mean;
+        console.log({ cv, mean, variance });
+        linear = cv < 0.1;
+      }
+    }
+
+    if (linear) {
+      cards.push({
+        heading: "⚠️ Linear Growth Detected",
+        details: `It looks like the spread of influence is growing at a constant rate. This happens when the withinRatio is limiting the spread of influence. Try slowly decreasing "Within Ratio" in the advanced options and leaving the rest of the parameters unchanged.`,
+        warning: true,
+      });
+    }
+
+    // check if the growth became logistic, implying the Total Population was limiting the spread
+    // to do this, check if the growth rate in the last year dropped significantly compared to the previous year, which is a sign of logistic growth
+    const len = result.yearlyGrowth.length;
+    const growthRates = result.yearlyGrowth.map((d, i) => {
+      if (i === 0) return 0;
+      const last = result.yearlyGrowth[i - 1].people;
+      if (last === 0) return 0;
+      return (d.people - last) / last;
+    });
+    let logistic = false;
+    if (len >= 3) {
+      const lastGrowthRate = growthRates[len - 1];
+      const prevGrowthRate = growthRates[len - 2];
+
+      if (prevGrowthRate > 0.5 && lastGrowthRate < prevGrowthRate * 0.5) {
+        logistic = true;
+      }
+    }
+    if (logistic && !linear) {
+      cards.push({
+        heading: "⚠️ Logistic Growth Detected",
+        details: `It looks like the spread of influence is slowing down in the last period, which is a common sign of logistic growth. Try experimenting with doubling the "Total Population" in the advanced options and leaving the rest of the parameters unchanged.`,
+        warning: true,
+      });
+    }
+
+    return cards;
+  }, [result, params]);
 
   const chartData = result.yearlyGrowth.map((d, i) => ({
     year: `Year ${i + 1}`,
@@ -50,24 +119,18 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
           label="People Reached"
           value={result.peopleReached.toLocaleString()}
         />
-        <StatCard
-          label="Percentage of Network"
-          value={`${result.percentage}%`}
-        />
+        <StatCard label="% of Population" value={result.percentage} />
       </div>
 
-      <Card>
-        <div className="text-gray-600 uppercase tracking-wide">
-          Simulation End Reason
-        </div>
-        <div className="text-lg text-gray-700 font-semibold">
-          <strong>{endReasonText}</strong>
-          <br />
-          <p className="text-gray-600 font-normal mt-1">
-            {endReasonExplanation}
-          </p>
-        </div>
-      </Card>
+      {analysisCards.map(({ heading, details, warning }) => (
+        <Card key={heading}>
+          <h6 className={`font-semibold ${warning ? "text-yellow-600" : ""}`}>
+            {heading}
+          </h6>
+
+          <p className="text-gray-600 font-normal mt-1">{details}</p>
+        </Card>
+      ))}
 
       <Card>
         <div className="text-gray-600 uppercase tracking-wide mb-3">

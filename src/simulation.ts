@@ -143,10 +143,11 @@ export async function runSimulate(
     }
   }
 
+  const percentage = (influenced.size / params.totalPopulation) * 100;
   return {
     years: growth.length,
     peopleReached: influenced.size - 1,
-    percentage: ((influenced.size / params.totalPopulation) * 100).toFixed(2),
+    percentage: percentage == 100 ? "100%" : `${percentage.toFixed(2)}%`,
     yearlyGrowth: growth,
     endReason,
     totalPopulation: params.totalPopulation,
