@@ -1,30 +1,23 @@
-interface LabeledInputProps {
+interface LabeledInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> {
   label: string;
-  value: string;
   onChange: (v: string) => void;
   hint?: string;
-  id?: string;
-  type?: string;
-  min?: string;
-  max?: string;
-  step?: string;
-  placeholder?: string;
   /** Use "prominent" for the main form input, "subtle" for advanced option inputs */
   variant?: "prominent" | "subtle";
 }
 
 export function LabeledInput({
   label,
-  value,
   onChange,
   hint,
   id,
   type = "number",
-  min,
-  max,
-  step,
-  placeholder,
   variant = "subtle",
+  className,
+  ...props
 }: LabeledInputProps) {
   const inputClass =
     variant === "prominent"
@@ -37,20 +30,16 @@ export function LabeledInput({
       : "block text-gray-700 font-semibold mb-1";
 
   return (
-    <div>
+    <div className={className}>
       <label htmlFor={id} className={labelClass}>
         {label}
       </label>
       <input
         id={id}
         type={type}
-        min={min}
-        max={max}
-        step={step}
-        placeholder={placeholder}
-        value={value}
         onChange={(e) => onChange(e.target.value)}
         className={inputClass}
+        {...props}
       />
       {hint && <small className="text-gray-600 block mt-1">{hint}</small>}
     </div>

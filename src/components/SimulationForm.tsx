@@ -35,36 +35,40 @@ export function SimulationForm({
     <div className="mb-10">
       <SectionHeading>See Your Ripple Effect</SectionHeading>
       <p className="mb-4 text-gray-700 text-justify">
-        It can feel like our individual actions are just a drop in the bucket.
-        But what if that drop creates ripples? Imagine you inspire just a few
-        people each year to live more sustainably—maybe through conversation
-        over a meal, working alongside them in a garden, or sharing what you've
-        learned about creation care. What if those people, in turn, inspire
-        others?
+        Imagine you genuinely influence just a few people each year—through
+        conversation, shared experience, or leading by example. Those people, in
+        turn, influence others. Each new person isn't just a recipient; they
+        become a source. That's what makes the growth curve look so different
+        from what our intuition predicts: it doesn't add, it multiplies.
       </p>
       <p className="mb-4 text-gray-700 text-justify">
-        This simulation shows how your "drop in the bucket" can ripple through a
-        network, accounting for the reality that about 95% of relationships stay
-        within close-knit communities. Watch how your influence could spread
-        through authentic relationships.
+        The simulation runs year by year, spreading influence through a
+        realistic social network where about 95% of relationships stay within
+        close-knit communities and only ~5% act as bridges to the wider world.
+        Start with a number that feels honest—even one or two per year produces
+        results that tend to surprise people.
       </p>
 
       <form
         className="bg-gray-50 p-8 rounded-lg border-2 border-primary"
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit();
+
+          if (e.target.reportValidity()) {
+            onSubmit();
+          }
         }}
       >
         <div className="mb-5">
           <LabeledInput
             id="influence"
-            label="How many people do you think you could meaningfully encourage toward environmental sensitivity each year?"
+            label="How many people do you think you could meaningfully influence each year?"
             value={influence}
             onChange={onInfluenceChange}
+            required
             min="0"
             step="0.01"
-            placeholder="Enter a number (e.g., 3)"
+            placeholder="Enter a number (e.g., 2)"
             hint="Be realistic—quality relationships matter more than quantity"
             variant="prominent"
           />

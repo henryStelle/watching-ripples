@@ -19,18 +19,19 @@ export function SimulationStory({ params }: SimulationStoryProps) {
         relationships bridge out to connect with people in other communities.
       </p>
       <p>
-        Now imagine you're dropped randomly into this network. You begin by
-        genuinely encouraging a few people each year toward environmental
-        sensitivity—through shared meals, gardening together, heartfelt
-        conversations about stewarding creation. Those you influence? They start
-        doing the same, and the ripple spreads outward.
+        Now imagine you're dropped randomly into this network. Each year, you
+        meaningfully influence a few people. Crucially, each person you reach
+        becomes a source of influence themselves—not a dead end. This is what
+        separates exponential growth from the linear model our intuitions
+        default to: the "active" population doesn't stay fixed at you, it grows
+        each year.
       </p>
       <p>
-        The simulation runs year by year, tracking how your influence flows
-        through these authentic relationships. It stops when one of three things
-        happens: everyone has been reached (a complete ripple!), the ripple hits
-        network saturation (when the influenced people have no more
-        un-influenced friends to reach), or {params.maxYears} years pass.
+        The simulation runs year by year, tracking how the ripple compounds
+        through authentic relationships. It stops when one of three things
+        happens: everyone has been reached (a complete ripple!), the network
+        saturates (all reachable people have already been reached), or{" "}
+        {params.maxYears} years pass.
       </p>
     </div>
   );

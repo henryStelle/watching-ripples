@@ -27,7 +27,7 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
       "Your influence rippled through the entire network. Every single person was reached!";
   } else if (result.endReason === "network_saturation") {
     endReasonText = "⛓️ Network Saturation";
-    endReasonExplanation = `All reachable connections have been influenced. The people you reached have no remaining un-influenced friends to spread to. This happens because communities are tightly connected internally (${(params.withinRatio * 100).toFixed(0)}% of relationships), with only about ${((1 - params.withinRatio) * 100).toFixed(0)}% of people acting as bridges between groups.`;
+    endReasonExplanation = `All reachable connections have been influenced. The people you reached have no remaining un-influenced friends to spread to. This happens because communities are tightly connected internally (${(params.withinRatio * 100).toFixed(0)}% of relationships), with only about ${((1 - params.withinRatio) * 100).toFixed(0)}% of relationships acting as bridges between groups.`;
   } else {
     endReasonText = "⏰ Time Limit Reached";
     endReasonExplanation =

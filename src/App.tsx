@@ -7,7 +7,7 @@ import { ResultsPanel } from "./components/ResultsPanel";
 
 export default function App() {
   // Form state
-  const [influence, setInfluence] = useState("3");
+  const [influence, setInfluence] = useState("");
   const [population, setPopulation] = useState("1500000");
   const [connections, setConnections] = useState("150");
   const [ratio, setRatio] = useState("0.95");
@@ -71,14 +71,14 @@ export default function App() {
   const storyParams = simParams ?? buildParams();
 
   return (
-    <div className="min-h-screen font-cormorant text-lg">
+    <div className="min-h-screen font-sans">
       <div className="max-w-4xl mx-auto md:my-5 md:rounded-xl shadow-2xl overflow-hidden">
         <header className="bg-primary text-white py-10 px-8 text-center">
-          <h1 className="text-5xl font-bold mb-2 drop-shadow-lg">
-            Windstone Farm
+          <h1 className="text-5xl font-semibold mb-2 drop-shadow-lg">
+            Watching Ripples
           </h1>
-          <p className="text-2xl italic opacity-95">
-            Cultivating community through Theology, Ecology, &amp; the Arts
+          <p className="text-xl opacity-95">
+            Explore how influence spreads through social networks
           </p>
         </header>
 
@@ -110,6 +110,18 @@ export default function App() {
             />
           )}
         </div>
+
+        <footer className="bg-gray-100 border-t border-gray-200 py-4 px-8 text-center text-sm text-gray-500">
+          Inspired by conversations at{" "}
+          <a
+            href="https://www.windstonecommunity.org"
+            target="_blank"
+            className="text-primary underline hover:opacity-80"
+          >
+            Windstone Farm
+          </a>
+          , a community cultivating Theology, Ecology, &amp; the Arts.
+        </footer>
       </div>
     </div>
   );
