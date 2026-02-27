@@ -85,9 +85,7 @@ export default function App() {
       const graphProgress = reached / params.totalPopulation;
       const yearProgress = year / params.maxYears;
       setLoadingProgress(Math.max(yearProgress, graphProgress) * 100);
-      setLoadingMsg(
-        `Year ${year}: Reached ${reached.toLocaleString()} people...`,
-      );
+      setLoadingMsg(`Year ${year}: ${reached.toLocaleString()} people...`);
     };
 
     worker.onmessage = (event: MessageEvent<WorkerOutMessage>) => {

@@ -25,8 +25,8 @@ export function ResultsPanel({
 
       {status === "loading" && (
         <div className="flex flex-col gap-2 items-center justify-center py-5">
-          <p className="text-xl text-primary">{loadingMsg}</p>
-          <div className="w-2/3 bg-gray-300 rounded-full h-4 overflow-hidden">
+          <p className="text-xl text-primary text-center">{loadingMsg}</p>
+          <div className="w-full md:w-2/3 bg-gray-300 rounded-full h-4 overflow-hidden">
             <div
               className="bg-primary h-4 rounded-full"
               style={{ width: `${loadingProgress}%` }}
