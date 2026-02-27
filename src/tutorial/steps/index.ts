@@ -4,6 +4,7 @@ import * as Step1 from "./Step1_TwoPeople";
 import * as Step2 from "./Step2_LimitedConnections";
 import * as Step3 from "./Step3_WithinRatio";
 import * as Step4 from "./Step4_Bridges";
+import * as Step5 from "./Step5_ContinueRunning";
 import * as configs from "./configs";
 import * as questions from "./questions";
 
@@ -47,4 +48,11 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Result: Step4.Result,
   },
   // ─────────────────────────────────────────
+  {
+    label: "Let it keep running",
+    simParams: configs.step5,
+    Prompt: Step5.Prompt,
+    guessInput: questions.questionStep5,
+    Result: Step5.Result,
+  },
 ];

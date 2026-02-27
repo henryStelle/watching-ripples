@@ -140,7 +140,9 @@ export function YearByYearBreakdown({ result, yearColors }: Props) {
           dagLevelDistance={60}
           backgroundColor="#030712"
           // colour each node by its year ring using the caller-supplied palette
-          nodeColor={(n) => yearColors[(n as GraphNode).year] ?? "#ffffff"}
+          nodeColor={(n) =>
+            yearColors[(n as GraphNode).year % yearColors.length] ?? "#ffffff"
+          }
           // base radius of each node in px (scaled by nodeVal if set)
           nodeRelSize={5}
           // tooltip shown on hover

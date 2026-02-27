@@ -20,6 +20,7 @@ interface TooltipPayload {
   color: string;
 }
 
+const intl = new Intl.NumberFormat([]);
 function CustomTooltip({
   active,
   payload,
@@ -36,14 +37,14 @@ function CustomTooltip({
   return (
     <div className="bg-white border border-gray-200 rounded shadow-sm px-3 py-2 text-xs text-gray-700 min-w-35">
       <p className="font-semibold mb-2">End of Year {label}</p>
-      <p className="mb-1 text-gray-500">Total: {total}</p>
+      <p className="mb-1 text-gray-500">Total: {intl.format(total)}</p>
       {rows.map((p, i) => (
         <p key={i} className="flex items-center gap-1">
           <span
             className="inline-block rounded-full shrink-0"
             style={{ width: 8, height: 8, background: p.color }}
           />
-          {p.name}: {p.value}
+          {p.name}: {intl.format(p.value)}
         </p>
       ))}
     </div>
@@ -108,7 +109,7 @@ export function LinearGrowthChart({ result, yearColors }: Props) {
           tick={{ fontSize: 11, fill: "#6b7280" }}
           tickLine={false}
           axisLine={false}
-          width={32}
+          width={40}
           allowDecimals={false}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "#f3f4f6" }} />
@@ -118,7 +119,7 @@ export function LinearGrowthChart({ result, yearColors }: Props) {
             dataKey={`wave${wIdx + 1}`}
             name={`Wave ${wIdx + 1}`}
             stackId="total"
-            fill={yearColors[wIdx + 1] ?? yearColors[yearColors.length - 1]}
+            fill={yearColors[wIdx % yearColors.length]}
             isAnimationActive={false}
           />
         ))}
