@@ -1,4 +1,4 @@
-import type { SimParams, SimResult } from "./types";
+import type { SimParams, SimResult, YearlyState } from "./types";
 
 // ============================================================
 // HELPERS
@@ -91,7 +91,7 @@ export async function runSimulate(
   const influenced = new Set<number>([start]);
   let active = [start];
   let year = 0;
-  const growth: { people: number }[] = [];
+  const growth: YearlyState[] = [];
   let endReason: SimResult["endReason"] = "everyone_reached";
 
   while (active.length > 0 && influenced.size < params.totalPopulation) {
@@ -135,7 +135,7 @@ export async function runSimulate(
       endReason = "network_saturation";
       break;
     }
-    growth.push({ people: influenced.size - 1 });
+    growth.push({ influenced: influenced.size - 1 });
     active = Array.from(next);
     if (year >= params.maxYears) {
       endReason = "max_time";
@@ -147,7 +147,8 @@ export async function runSimulate(
     years: growth.length,
     peopleReached: influenced.size - 1,
     populationIncluded: influenced.size / params.totalPopulation,
-    yearlyGrowth: growth,
+    yearlyState: growth,
+    startId: start,
     endReason,
     totalPopulation: params.totalPopulation,
   };

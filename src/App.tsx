@@ -33,6 +33,7 @@ export default function App() {
       withinRatio,
       connectionsBetween: avgConnections * (1 - withinRatio),
       maxYears: parseInt(maxYears) || 10,
+      trackAncestors: false,
     };
   }
 

@@ -58,12 +58,23 @@ pub struct SimParams {
     pub avg_connections: f64,
     pub within_ratio: f64,
     pub max_years: u32,
+    pub track_ancestors: bool,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct YearlyGrowth {
-    pub people: u32,
+pub struct YearlyState {
+    pub influenced: u32,
+    pub ancestors: Option<Vec<(u32, u32)>>, // (influencer, influenced)
+}
+
+impl YearlyState {
+    fn new(influenced: u32, ancestors: Option<Vec<(u32, u32)>>) -> Self {
+        YearlyState {
+            influenced,
+            ancestors,
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -72,9 +83,10 @@ pub struct SimResult {
     pub years: u32,
     pub people_reached: u32,
     pub population_included: f32,
-    pub yearly_growth: Vec<YearlyGrowth>,
+    pub yearly_state: Vec<YearlyState>,
     pub end_reason: String,
     pub total_population: u32,
+    pub start_id: u32,
 }
 
 // ============================================================
@@ -181,7 +193,7 @@ pub fn run_simulate(
     influenced[start as usize] = true;
     let mut active = vec![start];
     let mut year: u32 = 0;
-    let mut growth: Vec<YearlyGrowth> = Vec::new();
+    let mut growth: Vec<YearlyState> = Vec::new();
     let mut end_reason = "everyone_reached";
 
     while !active.is_empty() && influenced_count < n {
@@ -189,6 +201,11 @@ pub fn run_simulate(
         next_set.fill(false);
         next_vec.clear();
         let mut exhausted = true;
+        let mut ancestors: Option<Vec<(u32, u32)>> = if params.track_ancestors {
+            Some(Vec::new())
+        } else {
+            None
+        };
 
         while !active.is_empty() && influenced_count < n {
             let reached = influenced_count;
@@ -241,6 +258,7 @@ pub fn run_simulate(
                 available.swap_remove(i);
                 if !influenced[id] {
                     influenced[id] = true;
+                    ancestors.as_mut().map(|a| a.push((influencer, id as u32)));
                     influenced_count += 1;
                 }
                 if !next_set[id] {
@@ -254,9 +272,7 @@ pub fn run_simulate(
             end_reason = "network_saturation";
             break;
         }
-        growth.push(YearlyGrowth {
-            people: influenced_count as u32 - 1,
-        });
+        growth.push(YearlyState::new(influenced_count as u32 - 1, ancestors));
         let _ = on_progress.call2(
             &JsValue::NULL,
             &JsValue::from(year),
@@ -273,9 +289,10 @@ pub fn run_simulate(
         years: growth.len() as u32,
         people_reached: influenced_count as u32 - 1,
         population_included: influenced_count as f32 / n as f32,
-        yearly_growth: growth,
+        yearly_state: growth,
         end_reason: end_reason.to_string(),
         total_population: params.total_population,
+        start_id: start,
     };
 
     serde_wasm_bindgen::to_value(&result).map_err(|e| JsValue::from_str(&e.to_string()))

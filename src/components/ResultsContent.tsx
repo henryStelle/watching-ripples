@@ -41,12 +41,12 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
     // Linear growth means year-over-year increments are roughly constant.
     // We measure this via the coefficient of variation (stddev / mean) of the diffs —
     // a low CV means the increments are consistent, i.e. linear growth.
-    const growthDiffs = result.yearlyGrowth
-      .map(({ people }, i, arr) =>
+    const growthDiffs = result.yearlyState
+      .map(({ influenced }, i, arr) =>
         // ignore the first few years and wait for stabilization
         i === 0 || i < arr.length / 2
           ? null
-          : people - result.yearlyGrowth[i - 1].people,
+          : influenced - result.yearlyState[i - 1].influenced,
       )
       .filter((d): d is number => d !== null);
 
@@ -72,12 +72,12 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
 
     // check if the growth became logistic, implying the Total Population was limiting the spread
     // to do this, check if the growth rates go from above 1 (exponential growth) to below 0.5 (slowing down)
-    const growthRates = result.yearlyGrowth
+    const growthRates = result.yearlyState
       .map((d, i, arr) => {
         // ignore the first few years and wait for stabilization
         if (i === 0 || i < arr.length / 2) return null;
-        const last = result.yearlyGrowth[i - 1].people;
-        return (d.people - last) / last;
+        const last = result.yearlyState[i - 1].influenced;
+        return (d.influenced - last) / last;
       })
       .filter((d): d is number => d !== null);
     let logistic = false;
@@ -97,9 +97,9 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
     return cards;
   }, [result, params]);
 
-  const chartData = result.yearlyGrowth.map((d, i) => ({
+  const chartData = result.yearlyState.map((d, i) => ({
     year: `Year ${i + 1}`,
-    people: d.people,
+    people: d.influenced,
   }));
 
   return (

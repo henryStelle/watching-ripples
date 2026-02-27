@@ -11,14 +11,6 @@ export function runSimulateWasm(
   params: SimParams,
   onProgress: (year: number, reached: number) => void,
 ): SimResult {
-  // serde-wasm-bindgen expects camelCase keys, matching our #[serde(rename_all="camelCase")]
-  const wasmParams = {
-    totalPopulation: params.totalPopulation,
-    avgConnections: params.avgConnections,
-    withinRatio: params.withinRatio,
-    maxYears: params.maxYears,
-  };
-
-  const result = run_simulate(influencePerYear, wasmParams, onProgress);
+  const result = run_simulate(influencePerYear, params, onProgress);
   return result as SimResult;
 }
