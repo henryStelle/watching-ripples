@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "build:wasm": "wasm-pack build --target bundler --out-dir src/wasm-sim",
     "lint": "eslint .",
+    "lint:wasm": "cargo clippy -- -D warnings",
     "preview": "vite preview"
   },
   "dependencies": {
