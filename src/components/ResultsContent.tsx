@@ -1,16 +1,9 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { lazy, Suspense, useMemo } from "react";
 import type { SimParams, SimResult } from "../types";
 import { Card } from "./Card";
 import { StatCard } from "./StatCard";
-import { useMemo } from "react";
+
+const GrowthChart = lazy(() => import("./GrowthChart"));
 
 interface ResultsContentProps {
   result: SimResult;
@@ -139,32 +132,11 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
         <div className="text-gray-600 uppercase tracking-wide mb-3">
           Growth Pattern
         </div>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="year"
-              tick={{ fontSize: 12 }}
-              interval="preserveStartEnd"
-            />
-            <YAxis
-              tickFormatter={(v: number) => v.toLocaleString()}
-              tick={{ fontSize: 12 }}
-              width={80}
-            />
-            <Tooltip
-              formatter={(v: number | undefined) => v?.toLocaleString() ?? ""}
-            />
-            <Line
-              type="monotone"
-              dataKey="people"
-              stroke="rgb(59, 84, 33)"
-              strokeWidth={2}
-              dot={false}
-              fill="rgba(59, 84, 33, 0.2)"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <Suspense
+          fallback={<div className="h-100 animate-pulse bg-gray-100 rounded" />}
+        >
+          <GrowthChart data={chartData} />
+        </Suspense>
       </Card>
     </div>
   );

@@ -12,7 +12,7 @@ const PROGRESS_THRESHOLD: f64 = 0.01; // report every 1% growth
 
 use std::cell::Cell;
 thread_local! {
-    static RNG_STATE: Cell<u64> = Cell::new(0);
+    static RNG_STATE: Cell<u64> = const { Cell::new(0) };
 }
 
 fn seed_rng() {
@@ -190,11 +190,7 @@ pub fn run_simulate(
         next_vec.clear();
         let mut exhausted = true;
 
-        while active.len() > 0 {
-            if influenced_count >= n {
-                break;
-            }
-
+        while !active.is_empty() && influenced_count < n {
             let reached = influenced_count;
             if reached >= next_progress_at {
                 next_progress_at = reached + progress_step;
