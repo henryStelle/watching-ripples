@@ -10,7 +10,7 @@ interface StepRunnerProps {
   simResult: SimResult | null;
   loadingMsg: string;
   loadingProgress: number;
-  runSim: (influencePerYear: number, params: SimParams) => void;
+  runSim: (params: SimParams) => void;
   resetSim: () => void;
 }
 
@@ -64,7 +64,7 @@ export function StepRunner({
     const parsed = parseFloat(guess);
     if (isNaN(parsed) || parsed < 0) return;
     setLockedGuess(parsed);
-    runSim(step.influencePerYear, step.simParams);
+    runSim(step.simParams);
   }
 
   const { Prompt, guessInput, Result } = step;
@@ -74,21 +74,17 @@ export function StepRunner({
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto px-1">
       {/* ── Step's Prompt ─────────────────────────────────────── */}
-      <Prompt />
+      <Prompt params={step.simParams} />
+
+      {/* Question display */}
+      <div className="bg-amber-50 border-l-4 text-gray-700 border-amber-400 px-4 py-3 rounded text-sm">
+        <strong>The question:</strong> {guessInput.label}
+      </div>
 
       {/* ── Predicting — guess form ───────────────────────────── */}
       {phase === "predicting" && (
         <>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 bg-gray-50 border-2 border-primary rounded-lg p-5"
-          >
-            <label
-              htmlFor="step-guess"
-              className="font-semibold text-gray-800 text-base leading-snug"
-            >
-              {guessInput.label}
-            </label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               id="step-guess"
               type="number"

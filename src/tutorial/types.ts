@@ -1,17 +1,14 @@
+import type { ReactNode } from "react";
 import type { SimParams, SimResult } from "../types";
 
-// ─────────────────────────────────────────────────────────────
-// Props for override-only steps (e.g. Intro).
-// The step gets navigation and nothing else — it renders itself.
-// ─────────────────────────────────────────────────────────────
 export interface OverrideProps {
   onAdvance: () => void;
   onBack: () => void;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Props injected into a step's Result component by StepRunner.
-// ─────────────────────────────────────────────────────────────
+export interface PromptProps {
+  params: SimParams;
+}
 export interface ResultProps {
   result: SimResult;
   params: SimParams;
@@ -22,7 +19,7 @@ export interface ResultProps {
 // between steps for the input widget.
 // ─────────────────────────────────────────────────────────────
 export interface GuessInputConfig {
-  label: string;
+  label: ReactNode;
   placeholder?: string;
   min?: number;
   max?: number;
@@ -44,7 +41,7 @@ export interface GuessInputConfig {
 //
 // To add a new standard step:
 //   1. Create a file in steps/ that exports Prompt, guessInput, Result,
-//      plus the fixed sim constants (simParams, influencePerYear).
+//      plus the fixed sim constants.
 //   2. Add a TutorialStepDef entry to steps/index.ts.
 //   Nothing else changes.
 // ─────────────────────────────────────────────────────────────
@@ -57,9 +54,8 @@ export type TutorialStepDef =
       label: string;
       fullOverride?: never;
       simParams: SimParams;
-      influencePerYear: number;
       /** Explains the setup and poses the question */
-      Prompt: React.ComponentType;
+      Prompt: React.ComponentType<PromptProps>;
       guessInput: GuessInputConfig;
       /** Explains why the simulation produced the result it did */
       Result: React.ComponentType<ResultProps>;

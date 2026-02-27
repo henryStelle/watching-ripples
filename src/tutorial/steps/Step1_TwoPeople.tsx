@@ -1,14 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 1 — Two people per year, two years
  *
- * This file exports only what is unique to this step:
- *   • INFLUENCE_PER_YEAR + TUTORIAL_PARAMS  (sim config)
- *   • Prompt   (explains the setup, poses the question)
- *   • guessInput  (label/config for the guess field)
- *   • Result   (explains why the answer is what it is, with visualizer)
+ * Exports only `createStep` (a StepFactory).  Defining Prompt and Result
+ * as module-level non-exports — rather than alongside exported constants —
+ * keeps this file free of mixed exports and avoids React Fast Refresh
+ * HMR warnings.
  *
- * All shared structure (guess form, submit button, loading bar, reveal
- * layout, nav buttons) lives in StepRunner.
+ * createStep receives the previous step's params/result so that later steps
+ * can build on this one.  Step 1 is the first standard step, so it ignores
+ * prevParams and establishes the baseline values instead.
  */
 
 import type { SimParams } from "../../types";
@@ -16,17 +17,12 @@ import type { GuessInputConfig, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
 
-// ── Sim constants ──────────────────────────────────────────────────────────
-
-export const INFLUENCE_PER_YEAR = 2;
-
-const MAX_YEARS = 2;
-
 export const TUTORIAL_PARAMS: SimParams = {
+  influencePerYear: 2,
   totalPopulation: 10_000,
   avgConnections: 150,
   withinRatio: 1, // totally isolated populations so that growth is consistent and predictable
-  maxYears: MAX_YEARS,
+  maxYears: 2,
   trackAncestors: true,
 };
 
@@ -50,29 +46,26 @@ export function Prompt() {
         influence 2 people in Year 1. Each of those people influences 2 more in
         Year 2. And so on.
       </p>
-      <div className="bg-amber-50 border-l-4 border-amber-400 px-4 py-3 rounded text-sm">
-        <strong>The question:</strong> After <strong>{MAX_YEARS} years</strong>,
-        how many people will have been influenced—
-        <em>not counting yourself</em>?
-      </div>
     </div>
   );
 }
 
-// ── Guess input config ─────────────────────────────────────────────────────
-
 export const guessInput: GuessInputConfig = {
-  label: "How many people do you think will be influenced after 2 years?",
+  label: (
+    <span>
+      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many people
+      will have been influenced—
+      <em>not counting yourself?</em>
+    </span>
+  ),
   placeholder: "Enter your guess",
   min: 0,
   step: 1,
 };
 
-// ── Result ─────────────────────────────────────────────────────────────────
-
 export function Result({ result }: ResultProps) {
   const year1 = result.yearlyState[0]?.influenced ?? 0;
-  const year2 = (result.yearlyState[1]?.influenced ?? 0) - year1; // new influenced in year 2
+  const year2 = (result.yearlyState[1]?.influenced ?? 0) - year1;
 
   return (
     <div className="flex flex-col gap-5">
@@ -82,7 +75,7 @@ export function Result({ result }: ResultProps) {
         </h3>
         <YearByYearBreakdown
           result={result}
-          params={TUTORIAL_PARAMS}
+          params={{} as SimParams /* visualizer only uses result */}
           yearColors={YEAR_COLORS}
         />
       </div>
@@ -90,16 +83,18 @@ export function Result({ result }: ResultProps) {
       <div className="flex flex-col gap-3 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
         <p>
           The <Swatch color={YEAR_COLORS[0]} label="amber node" /> at the centre
-          is you. In <strong>Year 1</strong> you reached {INFLUENCE_PER_YEAR}{" "}
-          people—the <Swatch color={YEAR_COLORS[1]} label="emerald nodes" /> in
-          the first ring.
+          is you. In <strong>Year 1</strong> you reached{" "}
+          {TUTORIAL_PARAMS.influencePerYear} people—the{" "}
+          <Swatch color={YEAR_COLORS[1]} label="emerald nodes" /> in the first
+          ring.
         </p>
         <p>
           In <strong>Year 2</strong>, it wasn't only you spreading the idea. The{" "}
           {year1} {year1 === 1 ? "person" : "people"} you reached in Year 1 each
-          became a source too—each influencing {INFLUENCE_PER_YEAR} new people.
-          Those are the <Swatch color={YEAR_COLORS[2]} label="sky-blue nodes" />{" "}
-          in the outer ring. So instead of adding {INFLUENCE_PER_YEAR} again,
+          became a source too—each influencing{" "}
+          {TUTORIAL_PARAMS.influencePerYear} new people. Those are the{" "}
+          <Swatch color={YEAR_COLORS[2]} label="sky-blue nodes" /> in the outer
+          ring. So instead of adding {TUTORIAL_PARAMS.influencePerYear} again,
           you get {year2} people in Year 2 as the number of people working to
           spread the idea is {year1 + 1} vs 1.
         </p>

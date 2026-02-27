@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 2 — Same influence rate, but only 2 close relationships each
  *
@@ -11,30 +12,35 @@
  */
 
 import type { SimParams } from "../../types";
-import type { GuessInputConfig, ResultProps } from "../types";
+import type { GuessInputConfig, PromptProps, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
 
-// ── Sim constants ──────────────────────────────────────────────────────────
-
-export const INFLUENCE_PER_YEAR = 2;
-
-const MAX_YEARS = 2;
-
-// Each person has exactly 2 close relationships and nothing beyond them.
-// withinRatio: 1 eliminates all long-range bridges so the network is a
-// simple ring — every person knows only their two immediate neighbours.
 export const TUTORIAL_PARAMS: SimParams = {
+  influencePerYear: 2,
   totalPopulation: 10_000,
-  avgConnections: 2,
+  avgConnections: 2, // the key change from Step 1 — now everyone has only 2 close relationships
   withinRatio: 1,
-  maxYears: MAX_YEARS,
+  maxYears: 2,
   trackAncestors: true,
 };
 
-// ── Prompt ─────────────────────────────────────────────────────────────────
+export const guessInput: GuessInputConfig = {
+  label: (
+    <span>
+      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many people
+      will have been influenced—
+      <em>not counting yourself?</em>
+    </span>
+  ),
+  placeholder: "Enter your guess",
+  min: 0,
+  step: 1,
+};
 
-export function Prompt() {
+export function Prompt({
+  params: { influencePerYear, maxYears },
+}: PromptProps) {
   return (
     <div className="flex flex-col gap-4 text-gray-700 leading-relaxed">
       <h2 className="text-xl font-bold text-gray-900">
@@ -42,47 +48,34 @@ export function Prompt() {
       </h2>
       <p>
         In the last step, you influenced{" "}
-        <strong className="text-primary">2 people in Year 1</strong> and the
-        idea kept compounding from there. But that assumed you had a deep pool
-        of potential connections to draw upon.
+        <strong className="text-primary">
+          {influencePerYear} people in Year 1
+        </strong>{" "}
+        and the idea kept compounding from there. But that assumed you had a
+        deep pool of potential connections to draw upon.
       </p>
       <p>
         Now let's constrain that. Imagine{" "}
         <strong>
-          everyone in this simulation — including you — has exactly 2 close
-          relationships
+          everyone in this simulation — including you — has exactly{" "}
+          {influencePerYear} close relationships
         </strong>{" "}
         where genuine influence can flow. That's it. No acquaintances, no
-        extended network, just 2 people.
+        extended network, just {influencePerYear} people.
       </p>
       <p>
         Everything else is identical to Step 1:{" "}
-        <strong className="text-primary">2 people per year</strong>,{" "}
-        <strong>{MAX_YEARS} years</strong>, and each person you reach goes on to
-        spread the idea at the same rate.
+        <strong className="text-primary">
+          {influencePerYear} people per year
+        </strong>
+        , <strong>{maxYears} years</strong>, and each person you reach goes on
+        to spread the idea at the same rate.
       </p>
-      <div className="bg-amber-50 border-l-4 border-amber-400 px-4 py-3 rounded text-sm">
-        <strong>The question:</strong> After <strong>{MAX_YEARS} years</strong>,
-        how many people will have been influenced—
-        <em>not counting yourself</em>?
-      </div>
     </div>
   );
 }
 
-// ── Guess input config ─────────────────────────────────────────────────────
-
-export const guessInput: GuessInputConfig = {
-  label:
-    "How many people will be influenced after 2 years with only 2 relationships each?",
-  placeholder: "Enter your guess",
-  min: 0,
-  step: 1,
-};
-
-// ── Result ─────────────────────────────────────────────────────────────────
-
-export function Result({ result }: ResultProps) {
+export function Result({ result, params }: ResultProps) {
   const year1Cumulative = result.yearlyState[0]?.influenced ?? 0;
   const year2Cumulative = result.yearlyState[1]?.influenced ?? 0;
   const newInYear2 = year2Cumulative - year1Cumulative;
@@ -95,7 +88,7 @@ export function Result({ result }: ResultProps) {
         </h3>
         <YearByYearBreakdown
           result={result}
-          params={TUTORIAL_PARAMS}
+          params={params}
           yearColors={YEAR_COLORS}
         />
       </div>
@@ -113,18 +106,18 @@ export function Result({ result }: ResultProps) {
         <p>
           In Year 2, the {year1Cumulative}{" "}
           {year1Cumulative === 1 ? "person" : "people"} from year 1 each try to
-          spread to their {INFLUENCE_PER_YEAR} connections — but one of those
-          slots is already occupied by <em>you</em>, the person who influenced
-          them. That leaves only <strong>1 free connection each</strong>, so
-          together they add just {newInYear2} new{" "}
-          {newInYear2 === 1 ? "person" : "people"} — the{" "}
+          spread to their {params.influencePerYear} connections — but one of
+          those slots is already occupied by <em>you</em>, the person who
+          influenced them. That leaves only{" "}
+          <strong>1 free connection each</strong>, so together they add just{" "}
+          {newInYear2} new {newInYear2 === 1 ? "person" : "people"} — the{" "}
           <Swatch color={YEAR_COLORS[2]} label="sky-blue nodes" /> in the outer
           ring.
         </p>
         <p>
-          Limiting each person to {INFLUENCE_PER_YEAR} relationships doesn't
-          stop the idea from spreading, but it does reduce how fast it can
-          spread.
+          Limiting each person to {params.influencePerYear} relationships
+          doesn't stop the idea from spreading, but it does reduce how fast it
+          can spread.
         </p>
       </div>
     </div>

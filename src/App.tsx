@@ -24,10 +24,11 @@ export default function App() {
   const [result, setResult] = useState<SimResult | null>(null);
   const [simParams, setSimParams] = useState<SimParams | null>(null);
 
-  function buildParams(): SimParams {
+  function buildParams(influencePerYear = 0): SimParams {
     const avgConnections = parseInt(connections) || 150;
     const withinRatio = parseFloat(ratio) || 0.95;
     return {
+      influencePerYear,
       totalPopulation: parseInt(population) || 1500000,
       avgConnections,
       withinRatio,
@@ -44,7 +45,7 @@ export default function App() {
       );
       return;
     }
-    const params = buildParams();
+    const params = buildParams(n);
     paramsRef.current = params;
     setSimParams(params);
     setStatus("loading");
@@ -52,11 +53,7 @@ export default function App() {
     setLoadingMsg("Running simulation...");
     setResult(null);
 
-    workerRef.current?.postMessage({
-      type: "run",
-      influencePerYear: n,
-      params,
-    });
+    workerRef.current?.postMessage({ type: "run", params });
 
     // Wait for the UI to render
     setTimeout(() => {

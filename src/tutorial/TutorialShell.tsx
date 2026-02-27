@@ -11,7 +11,7 @@ interface TutorialShellProps {
   simResult: SimResult | null;
   loadingMsg: string;
   loadingProgress: number;
-  runSim: (influencePerYear: number, params: SimParams) => void;
+  runSim: (params: SimParams) => void;
   resetSim: () => void;
 }
 

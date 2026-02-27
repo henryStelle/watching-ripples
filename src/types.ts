@@ -1,4 +1,5 @@
 export interface SimParams {
+  influencePerYear: number;
   totalPopulation: number;
   avgConnections: number;
   withinRatio: number;

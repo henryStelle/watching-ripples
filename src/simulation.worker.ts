@@ -3,7 +3,6 @@ import type { SimParams, SimResult } from "./types";
 
 export type WorkerInMessage = {
   type: "run";
-  influencePerYear: number;
   params: SimParams;
 };
 
@@ -16,7 +15,7 @@ export type WorkerOutMessage =
   | { type: "error"; message: string };
 
 self.onmessage = async (event: MessageEvent<WorkerInMessage>) => {
-  const { type, influencePerYear, params } = event.data;
+  const { type, params } = event.data;
   if (type !== "run") return;
 
   const handleProgress = (year: number, reached: number) => {
@@ -29,7 +28,11 @@ self.onmessage = async (event: MessageEvent<WorkerInMessage>) => {
 
   try {
     // Run WASM simulation
-    const result = runSimulateWasm(influencePerYear, params, handleProgress);
+    const result = runSimulateWasm(
+      params.influencePerYear,
+      params,
+      handleProgress,
+    );
 
     self.postMessage({
       type: "result",

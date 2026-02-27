@@ -25,7 +25,7 @@ export default function AppV2() {
   const [loadingMsg, setLoadingMsg] = useState("Running simulation...");
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // ── Tutorial navigation ───────────────────────────────────────────────────
+  // ── Tutorial navigation + completed-result history ────────────────────────
   const [stepIndex, setStepIndex] = useState(0);
 
   function handleAdvance() {
@@ -37,19 +37,13 @@ export default function AppV2() {
   }
 
   // ── Sim controls ──────────────────────────────────────────────────────────
-  function runSim(influencePerYear: number, params: SimParams) {
+  function runSim(params: SimParams) {
     paramsRef.current = params;
     setSimStatus("loading");
     setSimResult(null);
     setLoadingProgress(0);
     setLoadingMsg("Running simulation...");
-    console.log(
-      "Running sim with params:",
-      params,
-      "and influencePerYear:",
-      influencePerYear,
-    );
-    workerRef.current?.postMessage({ type: "run", influencePerYear, params });
+    workerRef.current?.postMessage({ type: "run", params });
   }
 
   function resetSim() {
