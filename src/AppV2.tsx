@@ -39,7 +39,15 @@ function AppV2Inner() {
   const { snapshots } = useStepSnapshots();
 
   function handleAdvance() {
-    setStepIndex((i) => Math.min(i + 1, TUTORIAL_STEPS.length - 1));
+    const nextIndex = Math.min(stepIndex + 1, TUTORIAL_STEPS.length - 1);
+    const snap = snapshots[nextIndex];
+    if (snap) {
+      setSimResult(snap.result);
+      setSimStatus("done");
+    } else {
+      resetSim();
+    }
+    setStepIndex(nextIndex);
   }
 
   function handleBack() {

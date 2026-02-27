@@ -109,7 +109,10 @@ export function RimGraph({
   }, [yearlyState]);
 
   // Only show edges / reached-state up to displayYears
-  const visibleEdges = allEdges.filter((e) => e.year <= displayYears);
+  const visibleEdges = useMemo(
+    () => allEdges.filter((e) => e.year <= displayYears),
+    [allEdges, displayYears],
+  );
 
   function fillColor(id: number): string {
     const y = yearReached.get(id);
@@ -117,18 +120,22 @@ export function RimGraph({
     return yearColors[y] ?? yearColors[yearColors.length - 1];
   }
 
-  const nodes = Array.from({ length: totalPopulation }, (_, id) => id);
+  const nodes = useMemo(
+    () => Array.from({ length: totalPopulation }, (_, id) => id),
+    [totalPopulation],
+  );
 
   function togglePlay() {
     setIsPlaying((p) => !p);
   }
 
   return (
-    <div className="flex flex-col gap-3" onClick={togglePlay}>
+    <div className="flex flex-col gap-3">
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         style={{ width: "100%", height: "auto" }}
         aria-label="Influence network — nodes arranged around a circle"
+        onClick={togglePlay}
       >
         {/* chord edges — drawn first so nodes sit on top */}
         {visibleEdges.map(({ src, tgt, year }, i) => {
@@ -174,6 +181,7 @@ export function RimGraph({
           <span>Year 1</span>
           <button
             className="flex items-center gap-1 font-medium text-gray-700 cursor-pointer select-none"
+            onClick={togglePlay}
             title={isPlaying ? "Pause" : "Play"}
           >
             <span>{isPlaying ? "⏸" : "▶"}</span>
@@ -188,6 +196,7 @@ export function RimGraph({
           max={maxYear}
           value={revealUpTo}
           onChange={(e) => {
+            setIsPlaying(false);
             const v = parseFloat(e.target.value);
             setRevealUpTo(v > maxYear ? 0 : v);
           }}

@@ -70,8 +70,11 @@ export function Result({ result }: ResultProps) {
         </p>
         <p>
           This is the core difference between linear and compound growth. In a
-          linear model, only you ever spread the idea. Here, everyone who's been
-          reached keeps spreading it.
+          linear model, only a fixed number of people spread the idea. Here,
+          everyone who's been reached keeps spreading it. This is only possible
+          because the idea is genuinely influential and contagious - it isn't
+          just a one-off share or advertisement, but something that each person
+          is motivated to pass on to others.
         </p>
       </div>
     </div>

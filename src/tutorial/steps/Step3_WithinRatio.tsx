@@ -44,11 +44,11 @@ export function Prompt({ params }: PromptProps) {
         from where it began.
       </p>
       <p>
-        With{" "}
+        If we allow each person to influence no more than{" "}
         <strong className="text-primary">
-          {influencePerYear} people influenced per year
+          {influencePerYear} people per year
         </strong>{" "}
-        and <strong>{maxYears} years</strong> on the clock, how many of the{" "}
+        and <strong>{maxYears} years</strong> are on the clock, how many of the{" "}
         {totalPopulation} people do you think the idea will reach?
       </p>
     </div>

@@ -81,15 +81,16 @@ export function Result({ result, params }: ResultProps) {
           spread to their {params.influencePerYear} connections — but one of
           those slots is already occupied by <em>you</em>, the person who
           influenced them. That leaves only{" "}
-          <strong>1 free connection each</strong>, so together they add just{" "}
-          {newInYear2} new {newInYear2 === 1 ? "person" : "people"} — the{" "}
+          <strong>{params.influencePerYear - 1} free connection each</strong>,
+          so together they add just {newInYear2} new{" "}
+          {newInYear2 === 1 ? "person" : "people"} — the{" "}
           <Swatch color={YEAR_COLORS[2]} label="sky-blue nodes" /> in the outer
           ring.
         </p>
         <p>
           Limiting each person to {params.influencePerYear} relationships
           doesn't stop the idea from spreading, but it does reduce how fast it
-          can spread.
+          starts to spread.
         </p>
       </div>
     </div>
