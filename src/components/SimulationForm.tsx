@@ -62,6 +62,8 @@ export function SimulationForm({
         <div className="mb-5">
           <LabeledInput
             id="influence"
+            // TODO: this isn't clear if it is asking them to estimate the impact of the simulation or
+            // asking them how many they will personally influence.
             label="How many people do you think you could meaningfully influence each year?"
             value={influence}
             onChange={onInfluenceChange}
