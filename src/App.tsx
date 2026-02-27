@@ -31,7 +31,6 @@ export default function App() {
       totalPopulation: parseInt(population) || 1500000,
       avgConnections,
       withinRatio,
-      connectionsBetween: avgConnections * (1 - withinRatio),
       maxYears: parseInt(maxYears) || 10,
       trackAncestors: false,
     };

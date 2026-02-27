@@ -46,6 +46,7 @@ tutorial/
 ```
 
 **To add a new standard tutorial step:**
+
 1. Create `src/tutorial/steps/StepN_Name.tsx` exporting: `INFLUENCE_PER_YEAR`, `TUTORIAL_PARAMS`, `Prompt`, `guessInput`, `Result`.
 2. Add one entry to `steps/index.ts`. Nothing else changes.
 

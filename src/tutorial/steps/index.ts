@@ -1,6 +1,7 @@
 import type { TutorialStepDef } from "../types";
 import { Intro } from "./Intro";
 import * as Step1 from "./Step1_TwoPeople";
+import * as Step2 from "./Step2_LimitedConnections";
 
 /**
  * The ordered list of tutorial steps.
@@ -28,14 +29,13 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Result: Step1.Result,
   },
   // ─────────────────────────────────────────
-  // Future steps — add entries here, e.g.:
-  // {
-  //   label: "3 Years",
-  //   simParams: Step2.TUTORIAL_PARAMS,
-  //   influencePerYear: Step2.INFLUENCE_PER_YEAR,
-  //   Prompt: Step2.Prompt,
-  //   guessInput: Step2.guessInput,
-  //   Result: Step2.Result,
-  // },
+  {
+    label: "Limited Connections",
+    simParams: Step2.TUTORIAL_PARAMS,
+    influencePerYear: Step2.INFLUENCE_PER_YEAR,
+    Prompt: Step2.Prompt,
+    guessInput: Step2.guessInput,
+    Result: Step2.Result,
+  },
   // ─────────────────────────────────────────
 ];

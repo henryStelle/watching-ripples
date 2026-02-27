@@ -2,7 +2,6 @@ export interface SimParams {
   totalPopulation: number;
   avgConnections: number;
   withinRatio: number;
-  connectionsBetween: number;
   maxYears: number;
   trackAncestors: boolean;
 }

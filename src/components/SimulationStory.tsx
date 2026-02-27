@@ -6,7 +6,9 @@ interface SimulationStoryProps {
 
 export function SimulationStory({ params }: SimulationStoryProps) {
   const withinPercent = (params.withinRatio * 100).toFixed(1);
-  const betweenNum = params.connectionsBetween.toPrecision(1);
+  const betweenNum = Math.round(
+    params.avgConnections * (1 - params.withinRatio),
+  );
 
   return (
     <div className="flex flex-col gap-3 mt-3">

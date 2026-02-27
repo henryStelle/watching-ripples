@@ -14,16 +14,7 @@
 import type { SimParams } from "../../types";
 import type { GuessInputConfig, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
-
-// ── Colors ─────────────────────────────────────────────────────────────────
-// Three visually distinct hues: one per ring (root + 2 years).
-// Amber for the origin node so it reads as "you"; bold distinct hues for
-// each year so the growth rings are immediately legible.
-export const YEAR_COLORS = [
-  "#f59e0b", // year 0 — amber   (you, the origin)
-  "#10b981", // year 1 — emerald (first wave)
-  "#38bdf8", // year 2 — sky     (second wave)
-];
+import { YEAR_COLORS, Swatch } from "../stepUtils";
 
 // ── Sim constants ──────────────────────────────────────────────────────────
 
@@ -34,8 +25,7 @@ const MAX_YEARS = 2;
 export const TUTORIAL_PARAMS: SimParams = {
   totalPopulation: 10_000,
   avgConnections: 150,
-  withinRatio: 0.95,
-  connectionsBetween: 150 * 0.05,
+  withinRatio: 1, // totally isolated populations so that growth is consistent and predictable
   maxYears: MAX_YEARS,
   trackAncestors: true,
 };
@@ -79,16 +69,6 @@ export const guessInput: GuessInputConfig = {
 };
 
 // ── Result ─────────────────────────────────────────────────────────────────
-// Inline color swatch helper
-const Swatch = ({ color, label }: { color: string; label: string }) => (
-  <span className="inline-flex items-center gap-1">
-    <span
-      className="inline-block w-3 h-3 rounded-full shrink-0"
-      style={{ background: color }}
-    />
-    <strong>{label}</strong>
-  </span>
-);
 
 export function Result({ result }: ResultProps) {
   const year1 = result.yearlyState[0]?.influenced ?? 0;
