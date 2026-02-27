@@ -7,9 +7,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ResultProps } from "../types";
+import type { SimResult } from "../../types";
 
-interface Props extends ResultProps {
+interface Props {
+  result: SimResult;
   yearColors: string[];
 }
 

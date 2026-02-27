@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import type { SimParams, SimResult, Status } from "../types";
 import type { TutorialStepDef } from "./types";
+import { useStepSnapshots } from "./TutorialContext";
 
 interface StepRunnerProps {
   step: Extract<TutorialStepDef, { fullOverride?: never }>;
+  stepIndex: number;
   onAdvance: () => void;
   onBack: () => void;
   simStatus: Status;
@@ -31,6 +33,7 @@ type Phase = "predicting" | "running" | "revealed";
  */
 export function StepRunner({
   step,
+  stepIndex,
   onAdvance,
   onBack,
   simStatus,
@@ -40,17 +43,34 @@ export function StepRunner({
   runSim,
   resetSim,
 }: StepRunnerProps) {
-  const [guess, setGuess] = useState("");
-  const [lockedGuess, setLockedGuess] = useState<number | null>(null);
+  const { snapshots, saveSnapshot } = useStepSnapshots();
+  const initialSnapshot = snapshots[stepIndex];
+
+  const [guess, setGuess] = useState(
+    initialSnapshot ? String(initialSnapshot.guess) : "",
+  );
+  const [lockedGuess, setLockedGuess] = useState<number | null>(
+    initialSnapshot?.guess ?? null,
+  );
 
   // Reset sim + local state whenever the step changes (i.e. when stepIndex changes
   // and a new StepRunner is mounted by the shell's `key` prop).
+  // Skip reset when restoring from a saved snapshot.
   useEffect(() => {
-    resetSim();
-    setGuess("");
-    setLockedGuess(null);
+    if (!initialSnapshot) {
+      resetSim();
+      setGuess("");
+      setLockedGuess(null);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Persist the completed state so back-navigation can restore it.
+  useEffect(() => {
+    if (lockedGuess !== null && simResult !== null && !initialSnapshot) {
+      saveSnapshot(stepIndex, lockedGuess, simResult);
+    }
+  }, [lockedGuess, simResult, initialSnapshot, stepIndex, saveSnapshot]);
 
   const phase: Phase =
     lockedGuess === null
@@ -74,7 +94,7 @@ export function StepRunner({
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto px-1 w-full">
       {/* ── Step's Prompt ─────────────────────────────────────── */}
-      <Prompt params={step.simParams} />
+      <Prompt params={step.simParams} idx={stepIndex} />
 
       {/* Question display */}
       <div className="bg-amber-50 border-l-4 text-gray-700 border-amber-400 px-4 py-3 rounded text-sm">
@@ -175,7 +195,11 @@ export function StepRunner({
 
           {/* Step's Result — explains why */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <Result result={simResult} params={step.simParams} />
+            <Result
+              result={simResult}
+              params={step.simParams}
+              idx={stepIndex}
+            />
           </div>
 
           {/* Nav */}

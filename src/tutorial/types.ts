@@ -8,10 +8,12 @@ export interface OverrideProps {
 
 export interface PromptProps {
   params: SimParams;
+  idx: number;
 }
 export interface ResultProps {
   result: SimResult;
   params: SimParams;
+  idx: number;
 }
 
 // ─────────────────────────────────────────────────────────────

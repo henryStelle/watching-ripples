@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
-import type { ResultProps } from "../types";
+import type { SimResult } from "../../types";
 
 function ordinal(n: number): string {
   const s = ["th", "st", "nd", "rd"];
@@ -18,7 +18,8 @@ interface GraphLink {
   target: number;
 }
 
-interface Props extends ResultProps {
+interface Props {
+  result: SimResult;
   /**
    * One color per ring, index 0 = root (year 0), index 1 = year 1, etc.
    * Callers should supply as many entries as there are years so each ring

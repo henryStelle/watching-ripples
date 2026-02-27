@@ -82,6 +82,7 @@ export function TutorialShell({
         <StepRunner
           key={stepIndex}
           step={step}
+          stepIndex={stepIndex}
           onAdvance={onAdvance}
           onBack={onBack}
           simStatus={simStatus}

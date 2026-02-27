@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ResultProps } from "../types";
+import type { SimResult } from "../../types";
 
-interface Props extends ResultProps {
+interface Props {
+  result: SimResult;
   /**
    * One hex colour per wave: index 0 = origin node (year 0),
    * index 1 = reached in year 1, index 2 = year 2, etc.

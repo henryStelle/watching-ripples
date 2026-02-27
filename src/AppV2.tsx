@@ -13,8 +13,17 @@ import MyWorker from "./simulation.worker?worker";
 
 import { TutorialShell } from "./tutorial/TutorialShell";
 import { TUTORIAL_STEPS } from "./tutorial/steps/index";
+import { TutorialProvider, useStepSnapshots } from "./tutorial/TutorialContext";
 
 export default function AppV2() {
+  return (
+    <TutorialProvider>
+      <AppV2Inner />
+    </TutorialProvider>
+  );
+}
+
+function AppV2Inner() {
   // ── Worker ref ────────────────────────────────────────────────────────────
   const workerRef = useRef<Worker | null>(null);
   const paramsRef = useRef<SimParams | null>(null);
@@ -25,15 +34,24 @@ export default function AppV2() {
   const [loadingMsg, setLoadingMsg] = useState("Running simulation...");
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // ── Tutorial navigation + completed-result history ────────────────────────
+  // ── Tutorial navigation ───────────────────────────────────────────────────
   const [stepIndex, setStepIndex] = useState(0);
+  const { snapshots } = useStepSnapshots();
 
   function handleAdvance() {
     setStepIndex((i) => Math.min(i + 1, TUTORIAL_STEPS.length - 1));
   }
 
   function handleBack() {
-    setStepIndex((i) => Math.max(i - 1, 0));
+    const prevIndex = Math.max(stepIndex - 1, 0);
+    const snap = snapshots[prevIndex];
+    if (snap) {
+      setSimResult(snap.result);
+      setSimStatus("done");
+    } else {
+      resetSim();
+    }
+    setStepIndex(prevIndex);
   }
 
   // ── Sim controls ──────────────────────────────────────────────────────────

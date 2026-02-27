@@ -6,7 +6,6 @@
  * lives in questions.tsx (questionStep1).  index.ts wires them together.
  */
 
-import type { SimParams } from "../../types";
 import type { ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
@@ -48,11 +47,7 @@ export function Result({ result }: ResultProps) {
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
           How it unfolded, year by year
         </h3>
-        <YearByYearBreakdown
-          result={result}
-          params={{} as SimParams /* visualizer only uses result */}
-          yearColors={YEAR_COLORS}
-        />
+        <YearByYearBreakdown result={result} yearColors={YEAR_COLORS} />
       </div>
 
       <div className="flex flex-col gap-3 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">

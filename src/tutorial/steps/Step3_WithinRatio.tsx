@@ -70,7 +70,7 @@ export function Result({ result, params }: ResultProps) {
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
           Influence spreads through local connections
         </h3>
-        <RimGraph result={result} params={params} yearColors={YEAR_COLORS} />
+        <RimGraph result={result} yearColors={YEAR_COLORS} />
       </div>
 
       <div className="flex flex-col gap-3 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
@@ -88,11 +88,7 @@ export function Result({ result, params }: ResultProps) {
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
           Total people reached each year, by wave
         </h3>
-        <LinearGrowthChart
-          result={result}
-          params={params}
-          yearColors={YEAR_COLORS}
-        />
+        <LinearGrowthChart result={result} yearColors={YEAR_COLORS} />
       </div>
 
       <div className="flex flex-col gap-3 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
