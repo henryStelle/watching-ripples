@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 4 - One bridge fires in Year 2, doubling the active fronts
  *
@@ -8,28 +7,19 @@
  * from 4 to 8. Total reach goes from 20 (Step 3) to 32.
  */
 
-import type { SimParams } from "../../types";
-import type { GuessInputConfig, PromptProps, ResultProps } from "../types";
+import type { PromptProps, ResultProps } from "../types";
 import { RimGraph } from "../visualizers/RimGraph";
 import { LinearGrowthChart } from "../visualizers/LinearGrowthChart";
 import { YEAR_COLORS } from "../stepUtils";
-
-// Identical to Step 3 except withinRatio drops from 1.0 to 0.99
-export const TUTORIAL_PARAMS: SimParams = {
-  influencePerYear: 4,
-  totalPopulation: 50,
-  avgConnections: 4,
-  withinRatio: 0.97, // 3% of connections are long-range bridges
-  maxYears: 5,
-  trackAncestors: true,
-  seed: 42,
-};
 
 // ── Prompt ─────────────────────────────────────────────────────────────────
 
 export function Prompt({ params }: PromptProps) {
   const { avgConnections, influencePerYear, maxYears, totalPopulation } =
     params;
+  const betweenPct = (1 - params.withinRatio).toLocaleString([], {
+    style: "percent",
+  });
 
   return (
     <div className="flex flex-col gap-4 text-gray-700 leading-relaxed">
@@ -38,41 +28,27 @@ export function Prompt({ params }: PromptProps) {
       </h2>
       <p>
         In the last step, the wave crept steadily around the ring and reached{" "}
-        <strong>20 people</strong> in {maxYears} years - 4 new people every
+        <strong>10 people</strong> in {maxYears} years - 2 new people every
         year, no more, no less. The far side stayed grey.
       </p>
       <p>
-        Now we make one small change. A tiny fraction of connections are allowed
-        to "jump" to a random stranger elsewhere on the ring - someone
-        completely outside of your local neighbourhood. Think of it as the
-        friend who moved to another city: you still talk regularly, they just
-        don't know any of your other friends.
+        Now we make one small change. A tiny fraction (just {betweenPct}) of
+        connections are allowed to "jump" to a random stranger elsewhere on the
+        ring - someone completely outside of your local neighborhood. Think of
+        it as the friend who moved to another city: you still talk regularly,
+        they just don't know any of your other friends.
       </p>
       <p>
         Everything else stays the same: {avgConnections} connections per person,{" "}
         {influencePerYear} people influenced per year, {maxYears} years,{" "}
         {totalPopulation} people on the ring. The only difference is that
         occasionally one of those connections reaches across the circle instead
-        of to a neighbour.
+        of to a neighbor.
       </p>
       <p>How many people do you think the idea reaches this time?</p>
     </div>
   );
 }
-
-export const guessInput: GuessInputConfig = {
-  label: (
-    <span>
-      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many of the{" "}
-      {TUTORIAL_PARAMS.totalPopulation} people will have been influenced -{" "}
-      <em>not counting yourself?</em>
-    </span>
-  ),
-  placeholder: "Enter your guess",
-  min: 0,
-  max: TUTORIAL_PARAMS.totalPopulation - 1,
-  step: 1,
-};
 
 // ── Result ──────────────────────────────────────────────────────────────────
 
@@ -97,7 +73,13 @@ export function Result({ result, params }: ResultProps) {
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
           Scrub to Year 2 - spot the long chord
         </h3>
-        <RimGraph result={result} params={params} yearColors={YEAR_COLORS} />
+        <RimGraph
+          result={result}
+          params={params}
+          defaultAnimate={false}
+          defaultYear={result.years}
+          yearColors={YEAR_COLORS}
+        />
       </div>
 
       <div className="flex flex-col gap-2 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
@@ -125,11 +107,11 @@ export function Result({ result, params }: ResultProps) {
         {bridgeFired && (
           <p>
             Before the bridge: <strong>2 active fronts</strong>, adding{" "}
-            <strong>4 new people per year</strong>. After the bridge lands in
+            <strong>2 new people per year</strong>. After the bridge lands in
             Year 2: <strong>4 active fronts</strong>, adding{" "}
-            <strong>8 new people per year</strong>. The rate doubled - not
-            because anyone changed their behaviour, but because the idea now has
-            twice as many edges pushing into uncharted territory.
+            <strong>4 new people per year</strong>. The rate doubled - not
+            because anyone changed their behavior, but because the idea now has
+            twice as many nodes pushing into uncharted territory.
           </p>
         )}
         <p>
@@ -143,15 +125,8 @@ export function Result({ result, params }: ResultProps) {
           ) : (
             <> - the entire network</>
           )}
-          . Compare that to Step 3's 20: the setup is identical, the only
+          . Compare that to Step 3's 10: the setup is identical, the only
           difference is one friend who lives far away.
-        </p>
-        <p>
-          Notice what happened on the bar chart at Year 3: the stack grows
-          visibly taller. That's the moment the new arcs hit their stride. The
-          extra segment doesn't appear because more people started trying - it
-          appears because there are now more <em>places</em> where the idea is
-          actively spreading at once.
         </p>
       </div>
     </div>

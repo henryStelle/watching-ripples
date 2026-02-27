@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 3 - Purely local connections (withinRatio = 1)
  *
@@ -10,21 +9,10 @@
  * Sets up the contrast for Step 4, which adds bridge connections.
  */
 
-import type { SimParams } from "../../types";
-import type { GuessInputConfig, PromptProps, ResultProps } from "../types";
+import type { PromptProps, ResultProps } from "../types";
 import { RimGraph } from "../visualizers/RimGraph";
 import { LinearGrowthChart } from "../visualizers/LinearGrowthChart";
 import { YEAR_COLORS } from "../stepUtils";
-
-export const TUTORIAL_PARAMS: SimParams = {
-  influencePerYear: 4,
-  totalPopulation: 50,
-  avgConnections: 4,
-  withinRatio: 1.0, // all connections are local - no bridges whatsoever
-  maxYears: 5,
-  trackAncestors: true,
-  seed: 42,
-};
 
 // ── Prompt ─────────────────────────────────────────────────────────────────
 
@@ -67,20 +55,6 @@ export function Prompt({ params }: PromptProps) {
   );
 }
 
-export const guessInput: GuessInputConfig = {
-  label: (
-    <span>
-      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many of the{" "}
-      {TUTORIAL_PARAMS.totalPopulation} people will have been influenced -{" "}
-      <em>not counting yourself?</em>
-    </span>
-  ),
-  placeholder: "Enter your guess",
-  min: 0,
-  max: TUTORIAL_PARAMS.totalPopulation - 1,
-  step: 1,
-};
-
 // ── Result ──────────────────────────────────────────────────────────────────
 
 export function Result({ result, params }: ResultProps) {
@@ -94,7 +68,7 @@ export function Result({ result, params }: ResultProps) {
     <div className="flex flex-col gap-5">
       <div>
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
-          Scrub through the years to watch the wave creep around the ring
+          Influence spreads through local connections
         </h3>
         <RimGraph result={result} params={params} yearColors={YEAR_COLORS} />
       </div>

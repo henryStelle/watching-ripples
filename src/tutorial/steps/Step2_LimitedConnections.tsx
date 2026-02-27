@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 2 — Same influence rate, but only 2 close relationships each
  *
@@ -11,32 +10,9 @@
  * the other one.  So instead of 6 new in year 2, only 2 new.  Total = 4.
  */
 
-import type { SimParams } from "../../types";
-import type { GuessInputConfig, PromptProps, ResultProps } from "../types";
+import type { PromptProps, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
-
-export const TUTORIAL_PARAMS: SimParams = {
-  influencePerYear: 2,
-  totalPopulation: 10_000,
-  avgConnections: 2, // the key change from Step 1 — now everyone has only 2 close relationships
-  withinRatio: 1,
-  maxYears: 2,
-  trackAncestors: true,
-};
-
-export const guessInput: GuessInputConfig = {
-  label: (
-    <span>
-      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many people
-      will have been influenced—
-      <em>not counting yourself?</em>
-    </span>
-  ),
-  placeholder: "Enter your guess",
-  min: 0,
-  step: 1,
-};
 
 export function Prompt({
   params: { influencePerYear, maxYears },

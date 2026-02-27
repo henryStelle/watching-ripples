@@ -151,6 +151,28 @@ export function StepRunner({
             </div>
           </div>
 
+          {/* In dev, allow re-running the simulation */}
+          {import.meta.env.DEV && (
+            <>
+              <button
+                onClick={() => runSim(step.simParams)}
+                className="text-sm text-gray-400 hover:text-gray-600 text-center cursor-pointer"
+              >
+                Re-run simulation →
+              </button>{" "}
+              <button
+                onClick={() => {
+                  const seed = Math.floor(Math.random() * 99999999);
+                  console.log("Re-running with seed:", seed);
+                  runSim({ ...step.simParams, seed });
+                }}
+                className="text-sm text-gray-400 hover:text-gray-600 text-center cursor-pointer"
+              >
+                Re-run simulation with random seed →
+              </button>
+            </>
+          )}
+
           {/* Step's Result — explains why */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <Result result={simResult} params={step.simParams} />

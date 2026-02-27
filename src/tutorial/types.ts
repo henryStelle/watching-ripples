@@ -39,11 +39,6 @@ export interface GuessInputConfig {
 //     • Result     — component that explains *why* the answer is
 //                    what it is; receives result + params
 //
-// To add a new standard step:
-//   1. Create a file in steps/ that exports Prompt, guessInput, Result,
-//      plus the fixed sim constants.
-//   2. Add a TutorialStepDef entry to steps/index.ts.
-//   Nothing else changes.
 // ─────────────────────────────────────────────────────────────
 export type TutorialStepDef =
   | {

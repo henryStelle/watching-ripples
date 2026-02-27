@@ -34,6 +34,7 @@ export default function App() {
       withinRatio,
       maxYears: parseInt(maxYears) || 10,
       trackAncestors: false,
+      seed: Math.random(),
     };
   }
 
@@ -69,8 +70,6 @@ export default function App() {
   }
 
   const showResults = status === "loading" || status === "done";
-  // Use the params that were current when Run was clicked, or live params for the story preview
-  const storyParams = simParams ?? buildParams();
 
   useEffect(() => {
     const worker = new MyWorker();
@@ -139,13 +138,13 @@ export default function App() {
             onSubmit={handleRun}
           />
 
-          {showResults && (
+          {showResults && simParams && (
             <ResultsPanel
               status={status}
               loadingMsg={loadingMsg}
               loadingProgress={loadingProgress}
               result={result}
-              storyParams={storyParams}
+              storyParams={simParams}
             />
           )}
         </div>

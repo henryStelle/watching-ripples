@@ -40,15 +40,19 @@ tutorial/
   visualizers/          — Reusable visualizer components (imported by Result components)
     YearByYearBreakdown.tsx
   steps/
-    index.ts            — Ordered step registry — THE ONLY FILE to edit when adding a step
+    index.ts            — Ordered step registry; assembles all pieces into TUTORIAL_STEPS
+    configs.ts          — SimParams for every step (one named export per step)
+    questions.tsx       — GuessInputConfig (with JSX labels) for every step
     Intro.tsx           — fullOverride step (no sim; just intro text + CTA)
-    Step1_TwoPeople.tsx — Standard step: Prompt + guessInput config + Result
+    Step1_TwoPeople.tsx — Standard step: exports only Prompt + Result components
 ```
 
 **To add a new standard tutorial step:**
 
-1. Create `src/tutorial/steps/StepN_Name.tsx` exporting: `INFLUENCE_PER_YEAR`, `TUTORIAL_PARAMS`, `Prompt`, `guessInput`, `Result`.
-2. Add one entry to `steps/index.ts`. Nothing else changes.
+1. Add `stepN: SimParams` to `steps/configs.ts`.
+2. Add `questionStepN: GuessInputConfig` to `steps/questions.tsx` (JSX labels are fine here).
+3. Create `steps/StepN_Name.tsx` exporting only `Prompt` and `Result` React components.
+4. Wire the four pieces into one entry in `steps/index.ts`.
 
 **To add a full-override step** (custom layout, no sim): export a component satisfying `OverrideProps` and register it with `{ label, fullOverride: YourComponent }`.
 

@@ -1,30 +1,18 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Step 1 — Two people per year, two years
  *
- * Exports only `createStep` (a StepFactory).  Defining Prompt and Result
- * as module-level non-exports — rather than alongside exported constants —
- * keeps this file free of mixed exports and avoids React Fast Refresh
- * HMR warnings.
- *
- * createStep receives the previous step's params/result so that later steps
- * can build on this one.  Step 1 is the first standard step, so it ignores
- * prevParams and establishes the baseline values instead.
+ * Exports only Prompt and Result React components.
+ * SimParams live in configs.ts (step1) and the GuessInputConfig
+ * lives in questions.tsx (questionStep1).  index.ts wires them together.
  */
 
 import type { SimParams } from "../../types";
-import type { GuessInputConfig, ResultProps } from "../types";
+import type { ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
+import { step1 } from "./configs";
 
-export const TUTORIAL_PARAMS: SimParams = {
-  influencePerYear: 2,
-  totalPopulation: 10_000,
-  avgConnections: 150,
-  withinRatio: 1, // totally isolated populations so that growth is consistent and predictable
-  maxYears: 2,
-  trackAncestors: true,
-};
+const TUTORIAL_PARAMS = step1;
 
 // ── Prompt ─────────────────────────────────────────────────────────────────
 
@@ -49,19 +37,6 @@ export function Prompt() {
     </div>
   );
 }
-
-export const guessInput: GuessInputConfig = {
-  label: (
-    <span>
-      After <strong>{TUTORIAL_PARAMS.maxYears} years</strong>, how many people
-      will have been influenced—
-      <em>not counting yourself?</em>
-    </span>
-  ),
-  placeholder: "Enter your guess",
-  min: 0,
-  step: 1,
-};
 
 export function Result({ result }: ResultProps) {
   const year1 = result.yearlyState[0]?.influenced ?? 0;

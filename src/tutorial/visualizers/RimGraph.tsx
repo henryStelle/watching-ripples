@@ -7,6 +7,8 @@ interface Props extends ResultProps {
    * index 1 = reached in year 1, index 2 = year 2, etc.
    */
   yearColors: string[];
+  defaultAnimate?: boolean;
+  defaultYear?: number;
 }
 
 // ─── layout constants (SVG user-units, scaled by viewBox) ───
@@ -14,9 +16,13 @@ const SIZE = 480;
 const CX = SIZE / 2;
 const CY = SIZE / 2;
 const RIM_R = 195; // radius of the node ring
-const NODE_R = 7; // default node dot radius
-const ORIGIN_R = 10; // larger dot for the start node
+const NODE_R = 12; // default node dot radius
+const ORIGIN_R = 14; // larger dot for the start node
 const UNREACHED_COLOR = "#d1d5db"; // tailwind gray-300
+
+// -- animation timing constants --
+const TIME_PER_YEAR = 2000;
+const UPDATES_PE_YEAR = 30;
 
 function nodeAngle(id: number, total: number): number {
   // Start from the top (−π/2) and go clockwise
@@ -29,40 +35,54 @@ function nodeXY(id: number, total: number): [number, number] {
 }
 
 // ─── component ────────────────────────────────────────────────
-export function RimGraph({ result, yearColors }: Props) {
+export function RimGraph({
+  result,
+  yearColors,
+  defaultAnimate,
+  defaultYear,
+}: Props) {
   const { totalPopulation, startId, yearlyState, years } = result;
 
-  // Which year (1-indexed) to reveal up to; 0 = show all years
-  const [revealUpTo, setRevealUpTo] = useState(1);
+  // Which year to reveal up to, controlled by the slider
+  // 0 means "start state with only the origin revealed"
+  // 1 means "reveal origin + all Year 1 nodes"
+  const [revealUpTo, setRevealUpTo] = useState(defaultYear ?? 0);
   const maxYear = years; // total years the sim ran
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(defaultAnimate ?? true);
 
-  // Auto-advance the slider every second, wrapping back to year 1
+  // Auto-advance the slider, wrapping back to year 1
+  // 30 updates per second, each second moves at total of 1 year
   useEffect(() => {
     if (!isPlaying) return;
     const id = setInterval(() => {
       setRevealUpTo((prev) => {
-        const current = prev === 0 ? maxYear : prev;
-        const next = current >= maxYear ? 1 : current + 1;
+        // floor prev so we still see the last year for a full second before jumping back to 0
+        const next =
+          Math.floor(prev) > maxYear ? 0 : prev + 1 / UPDATES_PE_YEAR;
         return next === maxYear ? 0 : next;
       });
-    }, 1000);
+    }, TIME_PER_YEAR / UPDATES_PE_YEAR);
     return () => clearInterval(id);
   }, [isPlaying, maxYear]);
 
   // Pause on window blur, resume on window focus
   useEffect(() => {
-    const onBlur = () => setIsPlaying(false);
-    const onFocus = () => setIsPlaying(true);
+    let beforeBlur = defaultAnimate ?? true;
+    const onBlur = () =>
+      setIsPlaying((p) => {
+        beforeBlur = p;
+        return false;
+      });
+    const onFocus = () => setIsPlaying(beforeBlur);
     window.addEventListener("blur", onBlur);
     window.addEventListener("focus", onFocus);
     return () => {
       window.removeEventListener("blur", onBlur);
       window.removeEventListener("focus", onFocus);
     };
-  }, []);
+  }, [defaultAnimate]);
 
-  const displayYears = revealUpTo === 0 ? maxYear : revealUpTo;
+  const displayYears = Math.floor(revealUpTo);
 
   // nodeId → year it was first reached (0 = origin)
   const yearReached = useMemo(() => {
@@ -98,23 +118,17 @@ export function RimGraph({ result, yearColors }: Props) {
 
   const nodes = Array.from({ length: totalPopulation }, (_, id) => id);
 
+  function togglePlay() {
+    setIsPlaying((p) => !p);
+  }
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3" onClick={togglePlay}>
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         style={{ width: "100%", height: "auto" }}
         aria-label="Influence network — nodes arranged around a circle"
       >
-        {/* faint guide ring */}
-        <circle
-          cx={CX}
-          cy={CY}
-          r={RIM_R}
-          fill="none"
-          stroke="#e5e7eb"
-          strokeWidth={1}
-        />
-
         {/* chord edges — drawn first so nodes sit on top */}
         {visibleEdges.map(({ src, tgt, year }, i) => {
           const [x1, y1] = nodeXY(src, totalPopulation);
@@ -128,7 +142,7 @@ export function RimGraph({ result, yearColors }: Props) {
               x2={x2}
               y2={y2}
               stroke={color}
-              strokeWidth={1.5}
+              strokeWidth={NODE_R / 2}
               strokeOpacity={0.4}
             />
           );
@@ -153,30 +167,28 @@ export function RimGraph({ result, yearColors }: Props) {
         })}
       </svg>
 
-      {/* Year scrubber */}
+      {/* Year selector */}
       <div className="flex flex-col gap-1 px-1">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>Year 1</span>
           <button
-            onClick={() => setIsPlaying((p) => !p)}
             className="flex items-center gap-1 font-medium text-gray-700 cursor-pointer select-none"
             title={isPlaying ? "Pause" : "Play"}
           >
             <span>{isPlaying ? "⏸" : "▶"}</span>
-            <span>
-              {revealUpTo === 0 ? `All ${maxYear} years` : `Year ${revealUpTo}`}
-            </span>
+            <span>{`Year ${displayYears}`}</span>
           </button>
           <span>Year {maxYear}</span>
         </div>
         <input
           type="range"
-          min={1}
+          step={0.1} // for smoother dragging
+          min={0}
           max={maxYear}
-          value={revealUpTo === 0 ? maxYear : revealUpTo}
+          value={revealUpTo}
           onChange={(e) => {
-            const v = Number(e.target.value);
-            setRevealUpTo(v === maxYear ? 0 : v);
+            const v = parseFloat(e.target.value);
+            setRevealUpTo(v > maxYear ? 0 : v);
           }}
           className="w-full accent-emerald-600"
         />
