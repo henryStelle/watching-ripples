@@ -14,13 +14,12 @@ import { usePrevSnapshot } from "../TutorialContext";
 import * as configs from "./configs";
 
 export function Prompt({ params }: PromptProps) {
-  const { avgConnections, withinRatio } = params;
-  const betweenPct = (1 - withinRatio).toLocaleString([], { style: "percent" });
+  const { avgConnections } = params;
 
   return (
     <div className="flex flex-col gap-4 text-gray-700 leading-relaxed">
       <h2 className="text-xl font-bold text-gray-900">
-        Step 6: Relationships vs bridges
+        Step 6: What if each person knows fewer people?
       </h2>
       <p>
         We've identified two knobs that affect growth: how many relationships
@@ -28,20 +27,17 @@ export function Prompt({ params }: PromptProps) {
         long-range bridges. Which of these matters more over the long run?
       </p>
       <p>
-        In this experiment we keep the bridge rate the same as the previous step
-        ({betweenPct} of connections), but reduce each person's average
-        relationships back to <strong>{avgConnections}</strong>. We also extend
-        the simulation to ensure we see the long-term behavior.
+        To test it, let's cut relationships per person back down to{" "}
+        <strong>{avgConnections}</strong>. The bridge rate stays exactly the
+        same. Only the size of each person's local circle changes.
       </p>
-
       <p>
-        If reducing relationships per person drastically slows spread even with
-        the same number of bridges, then network density is the dominant factor.
-        If spread still reaches large fractions given enough time, then rare
-        bridges can compensate for sparse local connectivity.
+        We'll also let the simulation run for longer to give the network enough
+        time to show what it can do.
       </p>
 
       <SimParamsPanel params={params} prevParams={configs.step5} />
+      <p>How many people do you think the idea reaches this time?</p>
     </div>
   );
 }
@@ -49,6 +45,7 @@ export function Prompt({ params }: PromptProps) {
 const prevResultsLabel = `${configs.step5.avgConnections} relationships / person`;
 const thisResultsLabel = `${configs.step6.avgConnections} relationships / person`;
 
+const intl = new Intl.NumberFormat([]);
 export function Result({ result, idx }: ResultProps) {
   const totalReached = result.peopleReached;
   const yearsRan = result.years;
@@ -57,17 +54,9 @@ export function Result({ result, idx }: ResultProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
-        <p>
-          This run reached <strong>{totalReached} people</strong> in {yearsRan}{" "}
-          years. Compare that to the previous step's{" "}
-          <strong>{prevReached}</strong> in {prevSnap.result.years} years.
-        </p>
-      </div>
-
       <div>
         <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
-          Cumulative reach over time
+          Total reach over time
         </h3>
         <MultiResultLineChart
           results={[prevSnap.result, result]}
@@ -77,10 +66,25 @@ export function Result({ result, idx }: ResultProps) {
 
       <div className="flex flex-col gap-3 text-gray-700 text-sm leading-relaxed bg-emerald-50 border-l-4 border-primary px-4 py-4 rounded">
         <p>
-          Reducing the number of relationships per person clearly significantly
-          slows down the spread. However, the important thing to notice is that
-          the curve is the same shape - it just takes (much) longer to get
-          going.
+          With fewer connections per person, the idea reached{" "}
+          <strong>{intl.format(totalReached)} people</strong> in {yearsRan}{" "}
+          years — compared to <strong>{intl.format(prevReached)}</strong> in{" "}
+          {prevSnap.result.years} years in the previous step. That's a dramatic
+          slowdown.
+        </p>
+        <p>
+          Here's the important part though: look at the <em>shape</em> of both
+          curves. They both accelerate over time — the growth is still
+          exponential. Fewer local connections means each cluster fills up more
+          slowly, so the bridges get less "fuel" to carry the idea forward. But
+          the bridges are still working. The pattern is the same; it just takes
+          much longer to play out.
+        </p>
+        <p>
+          More connections speed things up — significantly. But the thing that
+          makes the difference between local fizzle and global reach isn't how
+          big your circle is. It's whether any of those connections lead
+          somewhere new.
         </p>
       </div>
     </div>

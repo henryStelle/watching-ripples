@@ -18,14 +18,29 @@ interface Props {
   /** Optional palette matching results order */
   colors?: string[];
   height?: number;
+  /** Calculate and display the slope, not value at each year */
+  showGrowth?: boolean;
+  defaultEnabled?: boolean[];
 }
 
-function buildSeries(results: SimResult[]) {
+function buildSeries(results: SimResult[], showGrowth: boolean) {
   // Determine max years across all results
   const maxYears = Math.max(...results.map((r) => r.yearlyState.length));
 
-  // For each result, build an array of cumulative influenced per year
-  const series = results.map((r) => r.yearlyState.map((s) => s.influenced));
+  // For each result, build an array
+  const series = results.map((r) => {
+    if (showGrowth) {
+      const growth = [];
+      for (let i = 1; i < r.yearlyState.length; i++) {
+        const current = r.yearlyState[i].influenced;
+        const previous = r.yearlyState[i - 1].influenced;
+        growth.push(current - previous);
+      }
+      return growth;
+    }
+
+    return r.yearlyState.map((s) => s.influenced);
+  });
 
   // Build unified data points: { year: 1, v0: x, v1: y, ... }
   const data = Array.from({ length: maxYears }, (_, i) => {
@@ -44,10 +59,17 @@ export default function MultiResultLineChart({
   labels,
   colors = YEAR_COLORS,
   height = 260,
+  showGrowth = false,
+  defaultEnabled,
 }: Props) {
-  const { data } = useMemo(() => buildSeries(results), [results]);
+  const { data } = useMemo(
+    () => buildSeries(results, showGrowth),
+    [results, showGrowth],
+  );
   const n = results.length;
-  const [visible, setVisible] = useState<boolean[]>(() => Array(n).fill(true));
+  const [visible, setVisible] = useState<boolean[]>(
+    () => defaultEnabled ?? Array(n).fill(true),
+  );
 
   function toggle(i: number) {
     setVisible((v) => {

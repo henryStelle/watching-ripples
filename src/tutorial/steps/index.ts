@@ -6,6 +6,7 @@ import * as Step3 from "./Step3_WithinRatio";
 import * as Step4 from "./Step4_Bridges";
 import * as Step5 from "./Step5_ContinueRunning";
 import * as Step6 from "./Step6_ConnectionsVsBridges";
+import * as Step7 from "./Step7_ZeroBridgesHighConnections";
 import * as configs from "./configs";
 import * as questions from "./questions";
 
@@ -61,5 +62,12 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Prompt: Step6.Prompt,
     guessInput: questions.questionStep6,
     Result: Step6.Result,
+  },
+  {
+    label: "No Bridges, Dense Network",
+    simParams: configs.step7,
+    Prompt: Step7.Prompt,
+    guessInput: questions.questionStep7,
+    Result: Step7.Result,
   },
 ];

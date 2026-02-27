@@ -43,3 +43,13 @@ export const step6: SimParams = {
   avgConnections: 3,
   maxYears: 65,
 };
+
+export const step7: SimParams = {
+  ...step5,
+  // No long-range bridges at all
+  withinRatio: 1.0,
+  // Relationships back to 20 per person
+  avgConnections: 20,
+  // Observe long-term behavior
+  maxYears: 65,
+};

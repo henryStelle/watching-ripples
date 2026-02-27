@@ -82,3 +82,17 @@ export const questionStep6: GuessInputConfig = {
   max: configs.step6.totalPopulation - 1,
   step: 1,
 };
+
+export const questionStep7: GuessInputConfig = {
+  label: (
+    <span>
+      After <strong>{configs.step7.maxYears} years</strong>, how many of the{" "}
+      {configs.step7.totalPopulation} people will have been influenced -{" "}
+      <em>not counting yourself?</em>
+    </span>
+  ),
+  placeholder: "Enter your guess",
+  min: 0,
+  max: configs.step7.totalPopulation - 1,
+  step: 1,
+};
