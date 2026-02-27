@@ -15,12 +15,17 @@ thread_local! {
     static RNG_STATE: Cell<u64> = const { Cell::new(0) };
 }
 
-fn seed_rng() {
-    // Combine two Math.random() calls to get a full 64-bit seed
-    let lo = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
-    let hi = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
-    let seed = (hi << 32) | lo | 1; // must be non-zero
-    RNG_STATE.with(|s| s.set(seed));
+fn seed_rng(seed: Option<u64>) {
+    let state = match seed {
+        Some(s) => s | 1, // ensure non-zero
+        None => {
+            // Combine two Math.random() calls to get a full 64-bit seed
+            let lo = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
+            let hi = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
+            (hi << 32) | lo | 1
+        }
+    };
+    RNG_STATE.with(|s| s.set(state));
 }
 
 /// Returns a random u64 via xorshift64.
@@ -59,6 +64,7 @@ pub struct SimParams {
     pub within_ratio: f64,
     pub max_years: u32,
     pub track_ancestors: bool,
+    pub seed: Option<f64>, // optional deterministic seed; omit for random
 }
 
 #[derive(Serialize)]
@@ -172,7 +178,8 @@ pub fn run_simulate(
     let params: SimParams =
         serde_wasm_bindgen::from_value(params).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    seed_rng(); // seed once; all subsequent RNG stays inside WASM
+    let seed = params.seed.map(|s| s as u64);
+    seed_rng(seed); // seed once; all subsequent RNG stays inside WASM
 
     let mut network = SocialNetwork::new(&params);
     let n = params.total_population as usize;

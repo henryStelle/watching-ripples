@@ -5,6 +5,7 @@ export interface SimParams {
   withinRatio: number;
   maxYears: number;
   trackAncestors: boolean;
+  seed?: number; // optional; omit for random, provide for deterministic runs
 }
 
 export interface YearlyState {
