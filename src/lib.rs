@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 const PROGRESS_THRESHOLD: f64 = 0.01; // report every 1% growth
@@ -11,21 +11,27 @@ const PROGRESS_THRESHOLD: f64 = 0.01; // report every 1% growth
 // ============================================================
 
 use std::cell::Cell;
+const DEFAULT_SEED: u64 = 47; // arbitrary non-zero seed
 thread_local! {
-    static RNG_STATE: Cell<u64> = const { Cell::new(0) };
+    static RNG_STATE: Cell<u64> = const { Cell::new(DEFAULT_SEED) };
 }
 
-fn seed_rng(seed: Option<u64>) {
-    let state = match seed {
-        Some(s) => s | 1, // ensure non-zero
-        None => {
-            // Combine two Math.random() calls to get a full 64-bit seed
-            let lo = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
-            let hi = (js_sys::Math::random() * (u32::MAX as f64)) as u64;
-            (hi << 32) | lo | 1
-        }
-    };
-    RNG_STATE.with(|s| s.set(state));
+#[wasm_bindgen]
+extern "C" {
+    // Bind to console.log(string)
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+fn seed_rng(seed: u64) {
+    // avoid zero seed which would produce only zeros
+    let seed = if seed == 0 { DEFAULT_SEED } else { seed };
+    log(&format!("seeding the rng with {}", seed));
+    RNG_STATE.with(|s| s.set(seed));
+    log(&format!(
+        "initial rng state: {}",
+        RNG_STATE.with(|s| s.get())
+    ));
 }
 
 /// Returns a random u64 via xorshift64.
@@ -64,7 +70,7 @@ pub struct SimParams {
     pub within_ratio: f64,
     pub max_years: u32,
     pub track_ancestors: bool,
-    pub seed: Option<f64>, // optional deterministic seed; omit for random
+    pub seed: f64,
 }
 
 #[derive(Serialize)]
@@ -140,7 +146,9 @@ impl SocialNetwork {
             return cached.clone();
         }
 
-        let mut connections = HashSet::new();
+        // Can't use a HashSet for connections because we need stable ordering between runs
+        // and the number of connections is small enough that O(n) lookup is fine.
+        let mut connections: Vec<u32> = Vec::new();
         let (within, between) = self.get_connection_counts();
         let half = (within / 2) as i64;
 
@@ -150,18 +158,19 @@ impl SocialNetwork {
             }
             let target =
                 ((person_id as i64 + offset).rem_euclid(self.total_population as i64)) as u32;
-            connections.insert(target);
+            if !connections.contains(&target) {
+                connections.push(target);
+            }
         }
         for _ in 0..between {
             let r = rng_usize(self.total_population as usize) as u32;
-            if r != person_id {
-                connections.insert(r);
+            if r != person_id && !connections.contains(&r) {
+                connections.push(r);
             }
         }
 
-        let result: Vec<u32> = connections.into_iter().collect();
-        self.connection_cache.insert(person_id, result.clone());
-        result
+        self.connection_cache.insert(person_id, connections.clone());
+        connections
     }
 }
 
@@ -178,8 +187,7 @@ pub fn run_simulate(
     let params: SimParams =
         serde_wasm_bindgen::from_value(params).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    let seed = params.seed.map(|s| s as u64);
-    seed_rng(seed); // seed once; all subsequent RNG stays inside WASM
+    seed_rng(params.seed as u64); // seed once; all subsequent RNG stays inside WASM
 
     let mut network = SocialNetwork::new(&params);
     let n = params.total_population as usize;
