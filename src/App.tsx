@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SimParams, SimResult, Status } from "./types";
-import { runSimulate, sleep } from "./simulation";
 import { Introduction } from "./components/Introduction";
 import { SimulationForm } from "./components/SimulationForm";
 import { ResultsPanel } from "./components/ResultsPanel";
+import type { WorkerOutMessage } from "./simulation.worker";
+import MyWorker from "./simulation.worker?worker";
 
 export default function App() {
+  const workerRef = useRef<Worker | null>(null);
+  const paramsRef = useRef<SimParams | null>(null);
+
   // Form state
   const [influence, setInfluence] = useState("");
   const [population, setPopulation] = useState("1500000");
@@ -41,34 +45,62 @@ export default function App() {
       return;
     }
     const params = buildParams();
+    paramsRef.current = params;
     setSimParams(params);
     setStatus("loading");
     setLoadingProgress(0);
     setLoadingMsg("Running simulation...");
     setResult(null);
-    await sleep(0); // let React flush before the heavy loop
 
-    try {
-      const res = await runSimulate(n, params, (year, reached) => {
-        const graphProgress = reached / params.totalPopulation;
-        const yearProgress = year / params.maxYears;
-        setLoadingProgress(Math.max(yearProgress, graphProgress) * 100);
-        setLoadingMsg(
-          `Year ${year}: Reached ${reached.toLocaleString()} people...`,
-        );
-      });
-      setResult(res);
-      setStatus("done");
-    } catch (err) {
-      console.error("Simulation error:", err);
-      alert("An error occurred during the simulation. Please try again.");
-      setStatus("idle");
-    }
+    workerRef.current?.postMessage({
+      type: "run",
+      influencePerYear: n,
+      params,
+    });
   }
 
   const showResults = status === "loading" || status === "done";
   // Use the params that were current when Run was clicked, or live params for the story preview
   const storyParams = simParams ?? buildParams();
+
+  useEffect(() => {
+    const worker = new MyWorker();
+    workerRef.current = worker;
+
+    const handleProgress = (year: number, reached: number) => {
+      const params = paramsRef.current;
+      if (!params) return;
+      const graphProgress = reached / params.totalPopulation;
+      const yearProgress = year / params.maxYears;
+      setLoadingProgress(Math.max(yearProgress, graphProgress) * 100);
+      setLoadingMsg(
+        `Year ${year}: Reached ${reached.toLocaleString()} people...`,
+      );
+    };
+
+    worker.onmessage = (event: MessageEvent<WorkerOutMessage>) => {
+      const msg = event.data;
+      if (msg.type === "progress") {
+        handleProgress(msg.year, msg.reached);
+      } else if (msg.type === "result") {
+        setResult(msg.result);
+        setStatus("done");
+      } else if (msg.type === "error") {
+        console.error("Simulation error:", msg.message);
+        alert("An error occurred during the simulation. Please try again.");
+        setStatus("idle");
+      }
+    };
+
+    worker.onerror = (err) => {
+      console.error("Worker error:", err);
+      alert("An error occurred during the simulation. Please try again.");
+      setStatus("idle");
+    };
+    return () => {
+      worker.terminate();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen font-sans">

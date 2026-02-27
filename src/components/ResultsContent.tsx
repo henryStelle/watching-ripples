@@ -19,6 +19,10 @@ interface ResultsContentProps {
 
 export function ResultsContent({ result, params }: ResultsContentProps) {
   const plural = result.years === 1 ? "year" : "years";
+  const percentage = result.populationIncluded.toLocaleString([], {
+    style: "percent",
+    maximumSignificantDigits: 2,
+  });
 
   const analysisCards = useMemo(() => {
     const cards = [];
@@ -30,7 +34,7 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
     if (result.endReason === "network_saturation") {
       endReasonText = "⛓️ Network Saturation";
       endReasonExplanation = `All reachable connections have been influenced. The people you reached have no remaining un-influenced friends to spread to. This happens because communities are tightly connected internally (${(params.withinRatio * 100).toFixed(0)}% of relationships), with only about ${((1 - params.withinRatio) * 100).toFixed(0)}% of relationships acting as bridges between groups.`;
-    } else {
+    } else if (result.endReason === "max_time") {
       endReasonText = "⏰ Time Limit Reached";
       endReasonExplanation =
         'The simulation reached its maximum duration. The ripple is still spreading, but we stopped the simulation here. You can try increasing the "Max Simulation Years" in the advanced options to see how much further it could go!';
@@ -61,7 +65,6 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
           growthDiffs.reduce((a, d) => a + (d - mean) ** 2, 0) /
           growthDiffs.length;
         const cv = Math.sqrt(variance) / mean;
-        console.log({ cv, mean, variance });
         linear = cv < 0.1;
       }
     }
@@ -119,7 +122,7 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
           label="People Reached"
           value={result.peopleReached.toLocaleString()}
         />
-        <StatCard label="% of Population" value={result.percentage} />
+        <StatCard label="% of Population" value={percentage} />
       </div>
 
       {analysisCards.map(({ heading, details, warning }) => (
