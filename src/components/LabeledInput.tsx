@@ -21,7 +21,7 @@ export function LabeledInput({
 }: LabeledInputProps) {
   const inputClass =
     variant === "prominent"
-      ? "w-full p-3 text-lg border-2 border-gray-300 rounded-md focus:outline-none focus:border-primary transition-colors"
+      ? "w-full p-2 md:p-3 text-lg border-2 border-gray-300 rounded-md focus:outline-none focus:border-primary transition-colors"
       : "w-full p-2 border border-gray-300 rounded";
 
   const labelClass =

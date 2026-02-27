@@ -34,14 +34,14 @@ export function SimulationForm({
   return (
     <div className="mb-10">
       <SectionHeading>See Your Ripple Effect</SectionHeading>
-      <p className="mb-4 text-gray-700 text-justify">
+      <p className="mb-4 text-gray-700">
         Imagine you genuinely influence just a few people each year—through
         conversation, shared experience, or leading by example. Those people, in
         turn, influence others. Each new person isn't just a recipient; they
         become a source. That's what makes the growth curve look so different
         from what our intuition predicts: it doesn't add, it multiplies.
       </p>
-      <p className="mb-4 text-gray-700 text-justify">
+      <p className="mb-4 text-gray-700">
         The simulation runs year by year, spreading influence through a
         realistic social network where about 95% of relationships stay within
         close-knit communities and only ~5% act as bridges to the wider world.
@@ -50,7 +50,7 @@ export function SimulationForm({
       </p>
 
       <form
-        className="bg-gray-50 p-8 rounded-lg border-2 border-primary"
+        className="bg-gray-50 p-4 md:p-8 rounded-lg border-2 border-primary"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -87,7 +87,7 @@ export function SimulationForm({
           <summary className="text-primary cursor-pointer">
             <span className="font-semibold">Advanced Options</span>
           </summary>
-          <div className="mt-4 p-4 bg-white rounded border border-gray-300">
+          <div className="mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <LabeledInput
                 label="Total Population"

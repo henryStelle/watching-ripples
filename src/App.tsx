@@ -114,7 +114,7 @@ export default function App() {
           </p>
         </header>
 
-        <div className="p-8 md:p-10">
+        <div className="p-4 sm:p-8 md:p-10">
           <Introduction />
 
           <SimulationForm

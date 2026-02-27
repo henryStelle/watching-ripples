@@ -4,7 +4,7 @@ export function Introduction() {
   return (
     <div className="mb-10">
       <SectionHeading>Do My Actions Actually Matter?</SectionHeading>
-      <p className="mb-4 text-gray-700 text-justify">
+      <p className="mb-4 text-gray-700">
         Most of us feel this at some point: the world's problems are so vast,
         and our personal relationships so small, that what we do couldn't
         possibly affect the wider culture. This intuition feels responsible—
@@ -13,7 +13,7 @@ export function Introduction() {
         a few others, and the signal fades out. But that's not how influence
         through relationships actually spreads.
       </p>
-      <p className="mb-4 text-gray-700 text-justify">
+      <p className="mb-4 text-gray-700">
         When the people you reach become sources of influence themselves, the
         growth <strong>compounds</strong>—the same dynamic behind every
         fast-spreading idea, norm, or movement in history. Our intuitions about

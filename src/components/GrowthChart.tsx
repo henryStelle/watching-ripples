@@ -17,15 +17,13 @@ export default function GrowthChart({ data }: GrowthChartProps) {
     <ResponsiveContainer width="100%" height={400}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="year"
-          tick={{ fontSize: 12 }}
-          interval="preserveStartEnd"
-        />
+        <XAxis dataKey="year" tick={{ fontSize: 12 }} />
         <YAxis
-          tickFormatter={(v: number) => v.toLocaleString()}
+          tickFormatter={(v: number) =>
+            v.toLocaleString([], { notation: "compact" })
+          }
           tick={{ fontSize: 12 }}
-          width={80}
+          width={50}
         />
         <Tooltip
           formatter={(v: number | undefined) => v?.toLocaleString() ?? ""}
