@@ -57,6 +57,18 @@ export default function App() {
       influencePerYear: n,
       params,
     });
+
+    // Wait for the UI to render
+    setTimeout(() => {
+      // Remove focus from the form as the scrolling can cause input fields to shift
+      const el = document.getElementById("results");
+
+      if (el) {
+        console.log("Scrolling to results...", el);
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.focus({ preventScroll: true });
+      }
+    }, 0);
   }
 
   const showResults = status === "loading" || status === "done";

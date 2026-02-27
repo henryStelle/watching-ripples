@@ -65,28 +65,26 @@ export function ResultsContent({ result, params }: ResultsContentProps) {
     if (linear) {
       cards.push({
         heading: "⚠️ Linear Growth Detected",
-        details: `It looks like the spread of influence is growing at a constant rate. This happens when the withinRatio is limiting the spread of influence. Try slowly decreasing "Within Ratio" in the advanced options and leaving the rest of the parameters unchanged.`,
+        details: `It looks like the spread of influence is growing at a constant rate. This happens when the Within Ratio is limiting the spread of influence. Try slowly decreasing "Within-Community Ratio" in the advanced options and leaving the rest of the parameters unchanged.`,
         warning: true,
       });
     }
 
     // check if the growth became logistic, implying the Total Population was limiting the spread
-    // to do this, check if the growth rate in the last year dropped significantly compared to the previous year, which is a sign of logistic growth
-    const len = result.yearlyGrowth.length;
-    const growthRates = result.yearlyGrowth.map((d, i) => {
-      if (i === 0) return 0;
-      const last = result.yearlyGrowth[i - 1].people;
-      if (last === 0) return 0;
-      return (d.people - last) / last;
-    });
+    // to do this, check if the growth rates go from above 1 (exponential growth) to below 0.5 (slowing down)
+    const growthRates = result.yearlyGrowth
+      .map((d, i, arr) => {
+        // ignore the first few years and wait for stabilization
+        if (i === 0 || i < arr.length / 2) return null;
+        const last = result.yearlyGrowth[i - 1].people;
+        return (d.people - last) / last;
+      })
+      .filter((d): d is number => d !== null);
     let logistic = false;
-    if (len >= 3) {
-      const lastGrowthRate = growthRates[len - 1];
-      const prevGrowthRate = growthRates[len - 2];
-
-      if (prevGrowthRate > 0.5 && lastGrowthRate < prevGrowthRate * 0.5) {
-        logistic = true;
-      }
+    if (growthRates.length >= 2) {
+      const hadExponential = growthRates.some((r) => r > 1);
+      const isSlowingDown = growthRates[growthRates.length - 1] < 0.5;
+      logistic = hadExponential && isSlowingDown;
     }
     if (logistic && !linear) {
       cards.push({

@@ -19,7 +19,9 @@ export function ResultsPanel({
 }: ResultsPanelProps) {
   return (
     <div className="mt-8 bg-linear-to-br from-green-50 to-emerald-100 p-4 pt-5 md:p-8 rounded-lg border-2 border-primary flex flex-col gap-4 animate-slide-in">
-      <h2 className="text-primary text-3xl font-bold">Your Ripple Effect</h2>
+      <h2 id="results" className="text-primary text-3xl font-bold">
+        Your Ripple Effect
+      </h2>
 
       {status === "loading" && (
         <div className="flex flex-col gap-2 items-center justify-center py-5">
