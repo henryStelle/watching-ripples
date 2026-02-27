@@ -5,6 +5,7 @@ import * as Step2 from "./Step2_LimitedConnections";
 import * as Step3 from "./Step3_WithinRatio";
 import * as Step4 from "./Step4_Bridges";
 import * as Step5 from "./Step5_ContinueRunning";
+import * as Step6 from "./Step6_ConnectionsVsBridges";
 import * as configs from "./configs";
 import * as questions from "./questions";
 
@@ -47,12 +48,18 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     guessInput: questions.questionStep4,
     Result: Step4.Result,
   },
-  // ─────────────────────────────────────────
   {
     label: "Let it keep running",
     simParams: configs.step5,
     Prompt: Step5.Prompt,
     guessInput: questions.questionStep5,
     Result: Step5.Result,
+  },
+  {
+    label: "Relationships vs Bridges",
+    simParams: configs.step6,
+    Prompt: Step6.Prompt,
+    guessInput: questions.questionStep6,
+    Result: Step6.Result,
   },
 ];

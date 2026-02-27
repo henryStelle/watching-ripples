@@ -36,5 +36,10 @@ export const step5: SimParams = {
   totalPopulation: 100000,
   avgConnections: 20,
   maxYears: 10,
-  trackAncestors: true,
+};
+
+export const step6: SimParams = {
+  ...step5,
+  avgConnections: 3,
+  maxYears: 65,
 };
