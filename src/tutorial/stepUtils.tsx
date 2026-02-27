@@ -15,6 +15,7 @@ export const YEAR_COLORS = [
   "#38bdf8", // year 2 — sky     (second wave)
   "#a78bfa", // year 3 — violet  (third wave)
   "#f87171", // year 4 — rose    (fourth wave)
+  "#fbbf24", // year 5 — yellow  (fifth wave)
 ];
 
 // ── Swatch ─────────────────────────────────────────────────────────────────

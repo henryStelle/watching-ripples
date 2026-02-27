@@ -72,7 +72,7 @@ export function StepRunner({
   const years = simResult?.years ?? 0;
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto px-1">
+    <div className="flex flex-col gap-6 max-w-2xl mx-auto px-1 w-full">
       {/* ── Step's Prompt ─────────────────────────────────────── */}
       <Prompt params={step.simParams} />
 

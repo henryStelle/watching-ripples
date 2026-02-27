@@ -110,9 +110,11 @@ export function YearByYearBreakdown({ result, yearColors }: Props) {
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
+      console.log("Container resized:", entries[0].contentRect);
       setWidth(entries[0].contentRect.width);
     });
     ro.observe(el);
+    console.log("Initial container width:", el.clientWidth);
     setWidth(el.clientWidth);
     return () => ro.disconnect();
   }, []);
@@ -123,12 +125,12 @@ export function YearByYearBreakdown({ result, yearColors }: Props) {
       className="w-full rounded-lg overflow-hidden bg-gray-950"
     >
       <div
-        className={`w-full transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
       >
         <ForceGraph2D
           ref={fgRef}
           width={width}
-          height={320}
+          height={300}
           graphData={graphData}
           // dagMode: lay out the graph as a tree rooted at the start node,
           // radiating outward so each year forms a concentric ring.

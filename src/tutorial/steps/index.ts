@@ -2,6 +2,8 @@ import type { TutorialStepDef } from "../types";
 import { Intro } from "./Intro";
 import * as Step1 from "./Step1_TwoPeople";
 import * as Step2 from "./Step2_LimitedConnections";
+import * as Step3 from "./Step3_WithinRatio";
+import * as Step4 from "./Step4_Bridges";
 
 /**
  * The ordered list of tutorial steps.
@@ -37,6 +39,22 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Prompt: Step2.Prompt,
     guessInput: Step2.guessInput,
     Result: Step2.Result,
+  },
+  // ─────────────────────────────────────────
+  {
+    label: "Bridge Friendships",
+    simParams: Step3.TUTORIAL_PARAMS,
+    Prompt: Step3.Prompt,
+    guessInput: Step3.guessInput,
+    Result: Step3.Result,
+  },
+  // ─────────────────────────────────────────
+  {
+    label: "One Friend Out of Town",
+    simParams: Step4.TUTORIAL_PARAMS,
+    Prompt: Step4.Prompt,
+    guessInput: Step4.guessInput,
+    Result: Step4.Result,
   },
   // ─────────────────────────────────────────
 ];
