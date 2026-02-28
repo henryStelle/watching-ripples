@@ -12,6 +12,7 @@ import type { SimParams } from "../../types";
 import MultiResultLineChart from "../visualizers/MultiResultLineChart";
 import { RimGraph } from "../visualizers/RimGraph";
 import { YEAR_COLORS } from "../stepUtils";
+import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Default personal parameters — a realistic, modest scenario
@@ -23,6 +24,7 @@ const DEFAULT_BRIDGE_PCT = 1; // ~1 % of connections bridge outward
 const DEFAULT_YEARS = 40; // roughly a working lifetime
 const DEFAULT_POPULATION = 1_000_000; // 1 M — manageable on mobile
 const MAX_RIM_POPULATION = 100; // rim graph gets unreadable past this point
+const MAX_NETWORK_GRAPH_POPULATION = 5_000;
 
 const intl = new Intl.NumberFormat([]);
 
@@ -191,7 +193,9 @@ export function Reflection({
       avgConnections,
       withinRatio: Math.max(0, 1 - bridgePct / 100),
       maxYears,
-      trackAncestors: population <= 1_000, // only track ancestors for smaller populations to save memory
+      trackAncestors:
+        population <=
+        Math.max(MAX_NETWORK_GRAPH_POPULATION, MAX_RIM_POPULATION), // only track ancestors for smaller populations to save memory
       seed: 42,
     };
     runSim(params);
@@ -270,7 +274,7 @@ export function Reflection({
             label="Close relationships per person (avg)"
             hint="Meaningful connections, not acquaintances — people they spend real time with."
             value={avgConnections}
-            min={1}
+            min={2}
             max={50}
             step={1}
             format={(v) => `${v} ${v === 1 ? "person" : "people"}`}
@@ -346,17 +350,46 @@ export function Reflection({
               </p>
             )}
 
-            <MultiResultLineChart
-              results={[simResult]}
-              labels={["Your scenario"]}
-            />
+            <MultiResultLineChart results={[simResult]} />
 
-            {population <= MAX_RIM_POPULATION ? (
-              <RimGraph result={simResult} yearColors={YEAR_COLORS} />
+            <p className="text-sm text-gray-600 text-center">
+              This chart shows how the total number of people reached grows over
+              time.
+            </p>
+
+            {simResult.totalPopulation <= MAX_RIM_POPULATION ? (
+              <>
+                <RimGraph result={simResult} yearColors={YEAR_COLORS} />
+                <p className="text-sm text-gray-600 italic text-center">
+                  The rim graph shows how the influence spread over time, works
+                  well when the "Relationships / Person" is lower.
+                </p>
+              </>
             ) : (
               <p className="border border-gray-500 p-4 rounded-2xl text-sm text-gray-500 italic text-center">
                 The rim graph visualization is only available for simulations
                 with up to {MAX_RIM_POPULATION} people to keep it readable.
+              </p>
+            )}
+
+            {simResult.peopleReached <= MAX_NETWORK_GRAPH_POPULATION ? (
+              <>
+                <YearByYearBreakdown
+                  result={simResult}
+                  yearColors={YEAR_COLORS}
+                  interactive
+                />
+                <p className="text-sm text-gray-600 italic text-center">
+                  This interactive graph shows how the ripple spread year by
+                  year. Hover over nodes to see details, and use your mouse or
+                  fingers to zoom and pan around the network.
+                </p>
+              </>
+            ) : (
+              <p className="border border-gray-500 p-4 rounded-2xl text-sm text-gray-500 italic text-center">
+                The year-by-year breakdown is only available for simulations
+                with up to {MAX_NETWORK_GRAPH_POPULATION} people to keep it
+                readable.
               </p>
             )}
 

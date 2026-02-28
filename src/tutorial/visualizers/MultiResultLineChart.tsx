@@ -136,29 +136,31 @@ export default function MultiResultLineChart({
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {results.map((_r, i) => {
-          const label = labels?.[i] ?? `Result ${i + 1}`;
-          const color = colors[i % colors.length];
-          return (
-            <button
-              key={i}
-              onClick={() => toggle(i)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm border ${
-                visible[i]
-                  ? "bg-gray-100 border-gray-200"
-                  : "bg-white border-transparent text-gray-400"
-              }`}
-            >
-              <span
-                className="w-3 h-3 rounded-full"
-                style={{ background: color }}
-              />
-              <span>{label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {results.length > 1 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {results.map((_r, i) => {
+            const label = labels?.[i] ?? `Result ${i + 1}`;
+            const color = colors[i % colors.length];
+            return (
+              <button
+                key={i}
+                onClick={() => toggle(i)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm border ${
+                  visible[i]
+                    ? "bg-gray-100 border-gray-200"
+                    : "bg-white border-transparent text-gray-400"
+                }`}
+              >
+                <span
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: color }}
+                />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

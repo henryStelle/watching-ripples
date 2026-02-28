@@ -72,8 +72,6 @@ function calculateArrowPositions(srcId: number, tgtId: number, total: number) {
   const rightX = tgtX + Math.cos(angle - arrowAngle) * length;
   const rightY = tgtY + Math.sin(angle - arrowAngle) * length;
 
-  console.log({ leftX, leftY, rightX, rightY, tgtX, tgtY });
-
   return [
     [
       [leftX, leftY],
