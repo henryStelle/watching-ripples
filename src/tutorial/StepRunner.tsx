@@ -18,6 +18,8 @@ interface StepRunnerProps {
 
 type Phase = "predicting" | "running" | "revealed";
 
+const intl = new Intl.NumberFormat([]);
+
 /**
  * StepRunner
  *
@@ -164,7 +166,9 @@ export function StepRunner({
               <span className="text-xs font-semibold text-primary uppercase tracking-wide">
                 Actual result
               </span>
-              <span className="text-4xl font-bold text-primary">{actual}</span>
+              <span className="text-4xl font-bold text-primary">
+                {intl.format(actual)}
+              </span>
               <span className="text-xs text-primary/70 italic">
                 people influenced in {years} years
               </span>

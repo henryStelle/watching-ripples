@@ -5,7 +5,7 @@ import { StepRunner } from "./StepRunner";
 interface TutorialShellProps {
   steps: TutorialStepDef[];
   stepIndex: number;
-  onAdvance: () => void;
+  onAdvance: (skip?: boolean) => void;
   onBack: () => void;
   simStatus: Status;
   simResult: SimResult | null;
@@ -43,47 +43,30 @@ export function TutorialShell({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* ── Progress dots ── */}
-      <div className="flex items-center justify-center gap-2 flex-wrap px-4">
-        {steps.map((s, i) => {
-          const isDone = i < stepIndex;
-          const isCurrent = i === stepIndex;
-          return (
-            <div key={s.label} className="flex flex-col items-center gap-1">
-              <div
-                className={[
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all",
-                  isDone
-                    ? "bg-primary text-white"
-                    : isCurrent
-                      ? "bg-primary text-white ring-2 ring-offset-2 ring-primary"
-                      : "bg-gray-200 text-gray-400",
-                ].join(" ")}
-              >
-                {isDone ? "✓" : i + 1}
-              </div>
-              <span
-                className={[
-                  "text-xs text-center max-w-16 leading-tight",
-                  isCurrent ? "text-primary font-semibold" : "text-gray-400",
-                ].join(" ")}
-              >
-                {s.label}
-              </span>
-            </div>
-          );
-        })}
+      {/* ── Step progress indicator (not details beyond the current step out of total) ── */}
+      <div className="flex flex-col items-center gap-3">
+        <p className="text-sm text-gray-500 font-medium">
+          Step {stepIndex + 1} of {steps.length}: {step.label}
+        </p>
+        <div className="w-full h-0.5 bg-gray-200 rounded-full" />
       </div>
 
       {/* ── Active step body ── */}
       {step.fullOverride ? (
-        <step.fullOverride onAdvance={onAdvance} onBack={onBack} />
+        <step.fullOverride
+          onAdvance={onAdvance}
+          onBack={onBack}
+          runSim={runSim}
+          resetSim={resetSim}
+          simStatus={simStatus}
+          simResult={simResult}
+        />
       ) : (
         <StepRunner
           key={stepIndex}
           step={step}
           stepIndex={stepIndex}
-          onAdvance={onAdvance}
+          onAdvance={() => onAdvance()}
           onBack={onBack}
           simStatus={simStatus}
           simResult={simResult}

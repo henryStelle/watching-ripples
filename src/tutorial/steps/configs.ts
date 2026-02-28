@@ -45,11 +45,18 @@ export const step6: SimParams = {
 };
 
 export const step7: SimParams = {
-  ...step5,
+  ...step6,
   // No long-range bridges at all
   withinRatio: 1.0,
-  // Relationships back to 20 per person
   avgConnections: 20,
-  // Observe long-term behavior
+};
+
+export const step8: SimParams = {
+  influencePerYear: 0.5,
+  totalPopulation: 1_000_000,
+  avgConnections: 10,
+  withinRatio: 0.99, // ~1 % long-range bridges
   maxYears: 65,
+  trackAncestors: false,
+  seed: 42,
 };

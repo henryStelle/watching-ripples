@@ -12,12 +12,13 @@ import { RimGraph } from "../visualizers/RimGraph";
 import { LinearGrowthChart } from "../visualizers/LinearGrowthChart";
 import { YEAR_COLORS } from "../stepUtils";
 import { usePrevSnapshot } from "../TutorialContext";
+import SimParamsPanel from "../visualizers/SimParamsPanel";
+import { step3 } from "./configs";
 
 // ── Prompt ─────────────────────────────────────────────────────────────────
 
 export function Prompt({ params, idx }: PromptProps) {
-  const { avgConnections, influencePerYear, maxYears, totalPopulation } =
-    params;
+  const { maxYears } = params;
   const betweenPct = (1 - params.withinRatio).toLocaleString([], {
     style: "percent",
   });
@@ -44,13 +45,16 @@ export function Prompt({ params, idx }: PromptProps) {
         they just don't know any of your other friends.
       </p>
       <p>
-        Everything else stays the same: {avgConnections} connections per person,{" "}
-        {influencePerYear} people influenced per year, {maxYears} years,{" "}
-        {totalPopulation} people on the ring. The only difference is that
-        occasionally one of those connections reaches across the circle instead
-        of to a neighbor.
+        Everything else stays the same. The only difference is that occasionally
+        one of those connections reaches across the circle instead of to a
+        neighbor.
       </p>
-      <p>How many people do you think the idea reaches this time?</p>
+      <SimParamsPanel params={params} prevParams={step3} />
+      <p>
+        Considering {prevSnap.result.peopleReached} people where reached last
+        time (you guessed {prevSnap.guess}), how many people do you think the
+        idea reaches this time?
+      </p>
     </div>
   );
 }

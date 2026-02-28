@@ -137,7 +137,7 @@ export default function MultiResultLineChart({
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {results.map((r, i) => {
+        {results.map((_r, i) => {
           const label = labels?.[i] ?? `Result ${i + 1}`;
           const color = colors[i % colors.length];
           return (

@@ -34,10 +34,18 @@ export function Intro({ onAdvance }: OverrideProps) {
       </div>
 
       <button
-        onClick={onAdvance}
+        onClick={() => onAdvance()}
         className="w-full bg-primary text-white py-4 px-8 text-lg rounded-lg font-bold cursor-pointer transition-all hover:shadow-lg active:scale-95"
       >
         Begin the Tutorial →
+      </button>
+
+      {/* allow skipping to the end of the tutorial for those who have completed it */}
+      <button
+        onClick={() => onAdvance(true)}
+        className="w-full text-gray-700 px-8 text-sm rounded-lg font-medium cursor-pointer hover:underline"
+      >
+        Skip to the end
       </button>
     </div>
   );

@@ -96,3 +96,22 @@ export const questionStep7: GuessInputConfig = {
   max: configs.step7.totalPopulation - 1,
   step: 1,
 };
+
+const intl = new Intl.NumberFormat([]);
+
+export const questionStep8: GuessInputConfig = {
+  label: (
+    <span>
+      In a world of{" "}
+      <strong>{intl.format(configs.step8.totalPopulation)} people</strong>, you
+      start with just {configs.step8.avgConnections} close relationships and
+      only convince <strong>half a new person per year</strong>. After{" "}
+      <strong>{configs.step8.maxYears} years</strong>, how many people will have
+      been influenced — <em>not counting yourself?</em>
+    </span>
+  ),
+  placeholder: "Enter your guess",
+  min: 0,
+  max: configs.step8.totalPopulation - 1,
+  step: 1,
+};

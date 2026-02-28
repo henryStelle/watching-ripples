@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
-import type { SimParams, SimResult } from "../types";
+import type { SimParams, SimResult, Status } from "../types";
 
 export interface OverrideProps {
-  onAdvance: () => void;
+  onAdvance: (skipToEnd?: boolean) => void;
   onBack: () => void;
+  runSim: (params: SimParams) => void;
+  resetSim: () => void;
+  simStatus: Status;
+  simResult: SimResult | null;
 }
 
 export interface PromptProps {

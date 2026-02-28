@@ -17,8 +17,6 @@ const SIZE = 480;
 const CX = SIZE / 2;
 const CY = SIZE / 2;
 const RIM_R = 195; // radius of the node ring
-const NODE_R = 12; // default node dot radius
-const ORIGIN_R = 14; // larger dot for the start node
 const UNREACHED_COLOR = "#d1d5db"; // tailwind gray-300
 
 // -- animation timing constants --
@@ -28,6 +26,13 @@ const UPDATES_PE_YEAR = 30;
 function nodeAngle(id: number, total: number): number {
   // Start from the top (−π/2) and go clockwise
   return (id / total) * 2 * Math.PI - Math.PI / 2;
+}
+
+function nodeRadius(total: number): number {
+  // We need distance between each node when they are laid along the circumference
+  const circumference = 2 * Math.PI * RIM_R;
+  const distanceBetweenNodes = circumference / total;
+  return Math.min(12, distanceBetweenNodes / 3.5);
 }
 
 function nodeXY(id: number, total: number): [number, number] {
@@ -43,6 +48,7 @@ export function RimGraph({
   defaultYear,
 }: Props) {
   const { totalPopulation, startId, yearlyState, years } = result;
+  const nodeR = useMemo(() => nodeRadius(totalPopulation), [totalPopulation]);
 
   // Which year to reveal up to, controlled by the slider
   // 0 means "start state with only the origin revealed"
@@ -117,7 +123,9 @@ export function RimGraph({
   function fillColor(id: number): string {
     const y = yearReached.get(id);
     if (y === undefined || y > displayYears) return UNREACHED_COLOR;
-    return yearColors[y] ?? yearColors[yearColors.length - 1];
+    return (
+      yearColors[y % yearColors.length] ?? yearColors[yearColors.length - 1]
+    );
   }
 
   const nodes = useMemo(
@@ -141,7 +149,7 @@ export function RimGraph({
         {visibleEdges.map(({ src, tgt, year }, i) => {
           const [x1, y1] = nodeXY(src, totalPopulation);
           const [x2, y2] = nodeXY(tgt, totalPopulation);
-          const color = yearColors[year] ?? "#6b7280";
+          const color = yearColors[year % yearColors.length] ?? "#6b7280";
           return (
             <line
               key={i}
@@ -150,7 +158,7 @@ export function RimGraph({
               x2={x2}
               y2={y2}
               stroke={color}
-              strokeWidth={NODE_R / 2}
+              strokeWidth={nodeR / 2}
               strokeOpacity={0.4}
             />
           );
@@ -160,7 +168,7 @@ export function RimGraph({
         {nodes.map((id) => {
           const [x, y] = nodeXY(id, totalPopulation);
           const isOrigin = id === startId;
-          const r = isOrigin ? ORIGIN_R : NODE_R;
+          const r = isOrigin ? nodeR * 1.2 : nodeR;
           return (
             <circle
               key={id}
@@ -214,7 +222,8 @@ export function RimGraph({
                 style={{
                   width: 10,
                   height: 10,
-                  background: yearColors[y] ?? UNREACHED_COLOR,
+                  background:
+                    yearColors[y % yearColors.length] ?? UNREACHED_COLOR,
                   border: y === 0 ? "1.5px solid #1f2937" : "1px solid white",
                 }}
               />

@@ -7,6 +7,8 @@ import * as Step4 from "./Step4_Bridges";
 import * as Step5 from "./Step5_ContinueRunning";
 import * as Step6 from "./Step6_ConnectionsVsBridges";
 import * as Step7 from "./Step7_ZeroBridgesHighConnections";
+import * as Step8 from "./Step8_Introvert";
+import { Reflection } from "./Step9_Reflection";
 import * as configs from "./configs";
 import * as questions from "./questions";
 
@@ -69,5 +71,18 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Prompt: Step7.Prompt,
     guessInput: questions.questionStep7,
     Result: Step7.Result,
+  },
+  // ─────────────────────────────────────────
+  {
+    label: "The Introvert's Long Game",
+    simParams: configs.step8,
+    Prompt: Step8.Prompt,
+    guessInput: questions.questionStep8,
+    Result: Step8.Result,
+  },
+  // ─────────────────────────────────────────
+  {
+    label: "Reflection",
+    fullOverride: Reflection,
   },
 ];

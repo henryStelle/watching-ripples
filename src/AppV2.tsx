@@ -38,8 +38,10 @@ function AppV2Inner() {
   const [stepIndex, setStepIndex] = useState(0);
   const { snapshots } = useStepSnapshots();
 
-  function handleAdvance() {
-    const nextIndex = Math.min(stepIndex + 1, TUTORIAL_STEPS.length - 1);
+  function handleAdvance(skipToEnd = false) {
+    const nextIndex = skipToEnd
+      ? TUTORIAL_STEPS.length - 1
+      : Math.min(stepIndex + 1, TUTORIAL_STEPS.length - 1);
     const snap = snapshots[nextIndex];
     if (snap) {
       setSimResult(snap.result);
@@ -48,6 +50,8 @@ function AppV2Inner() {
       resetSim();
     }
     setStepIndex(nextIndex);
+    // scroll up on nav
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleBack() {
@@ -56,10 +60,13 @@ function AppV2Inner() {
     if (snap) {
       setSimResult(snap.result);
       setSimStatus("done");
+      setStepIndex(prevIndex);
     } else {
+      // lots of steps depend on having previous sim results, so we can't reliably go back if we don't have a snapshot.
+      // In that case, just reset everything and jump to the start.
       resetSim();
+      setStepIndex(0);
     }
-    setStepIndex(prevIndex);
   }
 
   // ── Sim controls ──────────────────────────────────────────────────────────
@@ -154,9 +161,6 @@ function AppV2Inner() {
               Windstone Farm
             </a>
           </span>
-          <a href="/" className="text-gray-400 hover:text-gray-600 underline">
-            Switch to open-ended tool
-          </a>
         </footer>
       </div>
     </div>
