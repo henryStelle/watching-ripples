@@ -13,10 +13,11 @@
 import type { PromptProps, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
+import SimParamsPanel from "../visualizers/SimParamsPanel";
+import { step1 } from "./configs";
 
-export function Prompt({
-  params: { influencePerYear, maxYears },
-}: PromptProps) {
+export function Prompt({ params }: PromptProps) {
+  const { influencePerYear } = params;
   return (
     <div className="flex flex-col gap-4 text-gray-700 leading-relaxed">
       <h2 className="text-xl font-bold text-gray-900">
@@ -39,14 +40,11 @@ export function Prompt({
         where genuine influence can flow. That's it. No acquaintances, no
         extended network, just {influencePerYear} people.
       </p>
-      <p>
-        Everything else is identical to Step 1:{" "}
-        <strong className="text-primary">
-          {influencePerYear} people per year
-        </strong>
-        , <strong>{maxYears} years</strong>, and each person you reach goes on
-        to spread the idea at the same rate.
-      </p>
+      <SimParamsPanel
+        params={params}
+        prevParams={step1}
+        show={["influencePerYear", "avgConnections", "maxYears"]}
+      />
     </div>
   );
 }

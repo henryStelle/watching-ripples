@@ -37,7 +37,6 @@ export function Prompt({ params }: PromptProps) {
       </p>
 
       <SimParamsPanel params={params} prevParams={configs.step5} />
-      <p>How many people do you think the idea reaches this time?</p>
     </div>
   );
 }

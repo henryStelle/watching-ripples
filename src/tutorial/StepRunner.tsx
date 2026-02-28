@@ -47,6 +47,7 @@ export function StepRunner({
 }: StepRunnerProps) {
   const { snapshots, saveSnapshot } = useStepSnapshots();
   const initialSnapshot = snapshots[stepIndex];
+  const prevSnapshot = snapshots[stepIndex - 1] || null;
 
   const [guess, setGuess] = useState(
     initialSnapshot ? String(initialSnapshot.guess) : "",
@@ -101,6 +102,16 @@ export function StepRunner({
       {/* Question display */}
       <div className="bg-amber-50 border-l-4 text-gray-700 border-amber-400 px-4 py-3 rounded text-sm">
         <strong>The question:</strong> {guessInput.label}
+        {prevSnapshot && !step.configNotBuildFromPrevStep && (
+          <span className="block text-xs text-gray-500 mt-1">
+            Remember, last time the answer was{" "}
+            {intl.format(prevSnapshot.result.peopleReached)}
+            {prevSnapshot.guess != prevSnapshot.result.peopleReached && (
+              <> (you guessed {intl.format(prevSnapshot.guess)})</>
+            )}
+            .
+          </span>
+        )}
       </div>
 
       {/* ── Predicting — guess form ───────────────────────────── */}

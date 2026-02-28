@@ -3,8 +3,8 @@ import type { SimParams } from "../../types";
 export const step1: SimParams = {
   influencePerYear: 2,
   totalPopulation: 50,
-  avgConnections: 8,
-  withinRatio: 1, // totally isolated populations so that growth is consistent and predictable
+  avgConnections: 4,
+  withinRatio: 0,
   maxYears: 2,
   trackAncestors: true,
   seed: 42,
@@ -12,6 +12,7 @@ export const step1: SimParams = {
 
 export const step2: SimParams = {
   ...step1,
+  withinRatio: 1,
   avgConnections: 2,
 };
 

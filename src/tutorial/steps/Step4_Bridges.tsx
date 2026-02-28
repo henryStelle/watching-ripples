@@ -50,11 +50,6 @@ export function Prompt({ params, idx }: PromptProps) {
         neighbor.
       </p>
       <SimParamsPanel params={params} prevParams={step3} />
-      <p>
-        Considering {prevSnap.result.peopleReached} people where reached last
-        time (you guessed {prevSnap.guess}), how many people do you think the
-        idea reaches this time?
-      </p>
     </div>
   );
 }

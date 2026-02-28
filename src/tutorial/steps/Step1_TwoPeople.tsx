@@ -6,16 +6,17 @@
  * lives in questions.tsx (questionStep1).  index.ts wires them together.
  */
 
-import type { ResultProps } from "../types";
+import type { PromptProps, ResultProps } from "../types";
 import { YearByYearBreakdown } from "../visualizers/YearByYearBreakdown";
 import { YEAR_COLORS, Swatch } from "../stepUtils";
 import { step1 } from "./configs";
+import SimParamsPanel from "../visualizers/SimParamsPanel";
 
 const TUTORIAL_PARAMS = step1;
 
 // ── Prompt ─────────────────────────────────────────────────────────────────
 
-export function Prompt() {
+export function Prompt({ params }: PromptProps) {
   return (
     <div className="flex flex-col gap-4 text-gray-700 leading-relaxed">
       <h2 className="text-xl font-bold text-gray-900">
@@ -33,6 +34,7 @@ export function Prompt() {
         influence 2 people in Year 1. Each of those people influences 2 more in
         Year 2. And so on.
       </p>
+      <SimParamsPanel params={params} show={["influencePerYear", "maxYears"]} />
     </div>
   );
 }

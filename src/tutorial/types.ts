@@ -55,6 +55,7 @@ export type TutorialStepDef =
       label: string;
       fullOverride?: never;
       simParams: SimParams;
+      configNotBuildFromPrevStep?: boolean;
       /** Explains the setup and poses the question */
       Prompt: React.ComponentType<PromptProps>;
       guessInput: GuessInputConfig;

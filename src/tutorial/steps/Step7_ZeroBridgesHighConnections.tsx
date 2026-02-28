@@ -32,7 +32,6 @@ export function Prompt({ params }: PromptProps) {
       </p>
 
       <SimParamsPanel params={params} prevParams={configs.step6} />
-      <p>How far do you think the idea spreads without any bridges?</p>
     </div>
   );
 }

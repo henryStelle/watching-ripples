@@ -43,11 +43,6 @@ export function Prompt({ params }: PromptProps) {
       </p>
 
       <SimParamsPanel params={params} prevParams={configs.step7} />
-      <p>
-        In a world of{" "}
-        <strong>{intl.format(params.totalPopulation)} people</strong>, how many
-        will have been touched by this quiet life?
-      </p>
     </div>
   );
 }

@@ -26,6 +26,7 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
     Prompt: Step1.Prompt,
     guessInput: questions.questionStep1,
     Result: Step1.Result,
+    configNotBuildFromPrevStep: true,
   },
   // ─────────────────────────────────────────
   {
@@ -39,6 +40,7 @@ export const TUTORIAL_STEPS: TutorialStepDef[] = [
   {
     label: "Bridge Friendships",
     simParams: configs.step3,
+    configNotBuildFromPrevStep: true,
     Prompt: Step3.Prompt,
     guessInput: questions.questionStep3,
     Result: Step3.Result,
