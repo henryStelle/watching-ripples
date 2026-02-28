@@ -40,6 +40,52 @@ function nodeXY(id: number, total: number): [number, number] {
   return [CX + RIM_R * Math.cos(a), CY + RIM_R * Math.sin(a)];
 }
 
+function calculateArrowPositions(srcId: number, tgtId: number, total: number) {
+  const [srcX, srcY] = nodeXY(srcId, total);
+  let [tgtX, tgtY] = nodeXY(tgtId, total);
+  const r = nodeRadius(total);
+
+  // if the points are near each other, skip the arrow to avoid visual clutter
+  if (Math.hypot(srcX - tgtX, srcY - tgtY) < r * 8) {
+    return [];
+  }
+
+  // Create a vector in polar form from target to source
+  const dx = srcX - tgtX;
+  const dy = srcY - tgtY;
+  const angle = Math.atan2(dy, dx);
+  const length = r * 2;
+
+  // Now, move the target point back along that vector by the node radius, so the
+  // arrow starts at the edge of the node, not the center
+  tgtX += Math.cos(angle) * r;
+  tgtY += Math.sin(angle) * r;
+
+  // Now, rotate that vector by in either direction
+  const arrowAngle = Math.PI / 5; // 36 degrees between the two arrow lines
+
+  // Left arrow endpoint
+  const leftX = tgtX + Math.cos(angle + arrowAngle) * length;
+  const leftY = tgtY + Math.sin(angle + arrowAngle) * length;
+
+  // Right arrow endpoint
+  const rightX = tgtX + Math.cos(angle - arrowAngle) * length;
+  const rightY = tgtY + Math.sin(angle - arrowAngle) * length;
+
+  console.log({ leftX, leftY, rightX, rightY, tgtX, tgtY });
+
+  return [
+    [
+      [leftX, leftY],
+      [tgtX, tgtY],
+    ],
+    [
+      [rightX, rightY],
+      [tgtX, tgtY],
+    ],
+  ];
+}
+
 // ─── component ────────────────────────────────────────────────
 export function RimGraph({
   result,
@@ -47,7 +93,7 @@ export function RimGraph({
   defaultAnimate,
   defaultYear,
 }: Props) {
-  const { totalPopulation, startId, yearlyState, years } = result;
+  const { totalPopulation, startId, yearlyState, years, endReason } = result;
   const nodeR = useMemo(() => nodeRadius(totalPopulation), [totalPopulation]);
 
   // Which year to reveal up to, controlled by the slider
@@ -147,20 +193,47 @@ export function RimGraph({
       >
         {/* chord edges — drawn first so nodes sit on top */}
         {visibleEdges.map(({ src, tgt, year }, i) => {
-          const [x1, y1] = nodeXY(src, totalPopulation);
-          const [x2, y2] = nodeXY(tgt, totalPopulation);
+          const srcPos = nodeXY(src, totalPopulation);
+          const tgtPos = nodeXY(tgt, totalPopulation);
+          const arrowPts = calculateArrowPositions(src, tgt, totalPopulation);
+
           const color = yearColors[year % yearColors.length] ?? "#6b7280";
           return (
-            <line
-              key={i}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke={color}
-              strokeWidth={nodeR / 2}
-              strokeOpacity={0.4}
-            />
+            <>
+              {/* The line body */}
+              <line
+                key={i}
+                x1={srcPos[0]}
+                y1={srcPos[1]}
+                x2={tgtPos[0]}
+                y2={tgtPos[1]}
+                stroke={color}
+                strokeWidth={nodeR / 2}
+                strokeOpacity={0.4}
+              />
+
+              {/* Parts of the arrow */}
+              {/* <pol
+                key={`${i}-arrow`}
+                points={`${r.leftX},${r.leftY} ${tgtPos[0]},${tgtPos[1]} ${r.rightX},${r.rightY}`}
+                fill={color}
+                strokeWidth={nodeR / 2}
+                opacity={0.4}
+              /> */}
+
+              {arrowPts.map(([left, right], i) => (
+                <line
+                  key={`${i}-arrow`}
+                  x1={left[0]}
+                  y1={left[1]}
+                  x2={right[0]}
+                  y2={right[1]}
+                  stroke={color}
+                  strokeWidth={nodeR / 2}
+                  strokeOpacity={0.4}
+                />
+              ))}
+            </>
           );
         })}
 
@@ -230,13 +303,19 @@ export function RimGraph({
               {y === 0 ? "You" : `Year ${y}`}
             </span>
           ))}
-          <span className="flex items-center gap-1 text-xs text-gray-500">
-            <span
-              className="inline-block w-3 h-3 rounded-full"
-              style={{ background: UNREACHED_COLOR, border: "1px solid white" }}
-            />
-            Not yet reached
-          </span>
+          {/* If there are nodes not visited, show not reached label */}
+          {(displayYears < maxYear || endReason != "everyone_reached") && (
+            <span className="flex items-center gap-1 text-xs text-gray-500">
+              <span
+                className="inline-block w-3 h-3 rounded-full"
+                style={{
+                  background: UNREACHED_COLOR,
+                  border: "1px solid white",
+                }}
+              />
+              Not yet reached
+            </span>
+          )}
         </div>
       </div>
     </div>
