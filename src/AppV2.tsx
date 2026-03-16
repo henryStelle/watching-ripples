@@ -14,10 +14,13 @@ import MyWorker from "./simulation.worker?worker";
 import { TutorialShell } from "./tutorial/TutorialShell";
 import { TUTORIAL_STEPS } from "./tutorial/steps/index";
 import { TutorialProvider, useStepSnapshots } from "./tutorial/TutorialContext";
+import { analyticsContext } from "./analyticsContext";
+import Analytics from "./Analytics";
 
 export default function AppV2() {
   return (
     <TutorialProvider>
+      <Analytics />
       <AppV2Inner />
     </TutorialProvider>
   );
@@ -43,6 +46,8 @@ function AppV2Inner() {
       ? TUTORIAL_STEPS.length - 1
       : Math.min(stepIndex + 1, TUTORIAL_STEPS.length - 1);
     const snap = snapshots[nextIndex];
+    const pageName = TUTORIAL_STEPS[nextIndex].label;
+    analyticsContext.triggerPageView(pageName);
     if (snap) {
       setSimResult(snap.result);
       setSimStatus("done");
@@ -58,12 +63,16 @@ function AppV2Inner() {
     const prevIndex = Math.max(stepIndex - 1, 0);
     const snap = snapshots[prevIndex];
     if (snap) {
+      const pageName = TUTORIAL_STEPS[prevIndex].label;
+      analyticsContext.triggerPageView(pageName);
       setSimResult(snap.result);
       setSimStatus("done");
       setStepIndex(prevIndex);
     } else {
       // lots of steps depend on having previous sim results, so we can't reliably go back if we don't have a snapshot.
       // In that case, just reset everything and jump to the start.
+      const pageName = TUTORIAL_STEPS[0].label;
+      analyticsContext.triggerPageView(pageName);
       resetSim();
       setStepIndex(0);
     }
