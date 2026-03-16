@@ -5,13 +5,17 @@
 export const analyticsContext = {
   page: "home",
   triggerPageView(page: string) {
-    // store the page in case the sa_pageview function isn't ready yet
-    console.log("Triggering page view for", page);
-    this.page = page;
-    if ("sa_pageview" in window && typeof window.sa_pageview === "function") {
-      window.sa_pageview(page);
-    } else {
-      console.warn("sa_pageview function not available yet");
+    // the given names are rejected as they are not path-like, so convert them to something that SA will accept
+    const sanitizedPage = page.toLowerCase().replace(/\s+/g, "-");
+    const pathLike = `/${sanitizedPage}`;
+    try {
+      // store the page in case the sa_pageview function isn't ready yet
+      this.page = pathLike;
+      if ("sa_pageview" in window && typeof window.sa_pageview === "function") {
+        window.sa_pageview(pathLike);
+      }
+    } catch (err) {
+      console.error("Error triggering page view:", err);
     }
   },
 };

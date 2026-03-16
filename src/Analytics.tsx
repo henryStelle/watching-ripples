@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { analyticsContext } from "./analyticsContext";
 
 const src = import.meta.env.PROD
@@ -9,15 +10,22 @@ const hostname = import.meta.env.DEV ? "henrystelle.github.io" : undefined;
 const saLoad = () => analyticsContext.triggerPageView(analyticsContext.page);
 
 export default function Analytics() {
-  return (
-    <script
-      async
-      onLoad={saLoad}
-      // disable auto-collection of pageviews as the page isn't tracked in the url
-      data-auto-collect="false"
-      // try and support getting events while on localhost (not working for me)
-      data-hostname={hostname}
-      src={src}
-    ></script>
-  );
+  // add script to the head tag (if added to body, it doesn't work)
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.onload = saLoad;
+    script.setAttribute("data-auto-collect", "false");
+    if (hostname) {
+      script.setAttribute("data-hostname", hostname);
+    }
+    script.src = src;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  return null;
 }
